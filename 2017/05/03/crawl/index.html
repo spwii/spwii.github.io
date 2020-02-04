@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,Spider," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="赶集网的爬虫，爬取赶集网上的招聘的板块上的信息并储存。算是以深度优先来进行爬取 依赖 MongoDB requests pymongo BeautifulSoup and lxml  准备 确定已安装MongoDB，Python3.5, 浏览器建议使用Chrome。 安装需要的Python的第三方库:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="赶集网爬虫">
+<meta property="og:url" content="http://yoursite.com/2017/05/03/crawl/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="赶集网的爬虫，爬取赶集网上的招聘的板块上的信息并储存。算是以深度优先来进行爬取 依赖 MongoDB requests pymongo BeautifulSoup and lxml  准备 确定已安装MongoDB，Python3.5, 浏览器建议使用Chrome。 安装需要的Python的第三方库:">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/spwii/crawl1/master/test.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/spwii/crawl1/master/liuchengtu.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/spwii/crawl1/master/headers.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/spwii/crawl1/master/com_ex.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/spwii/crawl1/master/chanenl_list.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/spwii/crawl1/master/xiaoguotu1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/spwii/crawl1/master/xiaoguotu2.png">
+<meta property="article:published_time" content="2017-05-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-08-01T00:13:26.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Spider">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/spwii/crawl1/master/test.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/03/crawl/"/>
+
+
+
+
+
+  <title>赶集网爬虫 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/03/crawl/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jfif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">赶集网爬虫</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-03T00:00:00+08:00">
+                2017-05-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/spider/" itemprop="url" rel="index">
+                    <span itemprop="name">spider</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>赶集网的爬虫，爬取赶集网上的招聘的板块上的信息并储存。<br><em>算是以深度优先来进行爬取</em></p>
+<h2 id="依赖"><a href="#依赖" class="headerlink" title="依赖"></a>依赖</h2><ul>
+<li>MongoDB</li>
+<li>requests</li>
+<li>pymongo</li>
+<li>BeautifulSoup and lxml</li>
+</ul>
+<h3 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h3><ol>
+<li>确定已安装MongoDB，Python3.5, 浏览器建议使用Chrome。</li>
+<li>安装需要的Python的第三方库:<a id="more"></a>
+
+</li>
+</ol>
+<blockquote>
+<p>在 terminal(cmd) 中输入：</p>
+<p>win:</p>
+<p>pip install requests, bs4, pymongo, lxml</p>
+<p>linux:</p>
+<p>sudo pip3 install requests, bs4, pymongo, lxml</p>
+</blockquote>
+<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p><img src="https://raw.githubusercontent.com/spwii/crawl1/master/test.jpg" alt="test"></p>
+<ul>
+<li><p>Spider 1 从<a href="http://bj.ganji.com/zhaopin/" target="_blank" rel="noopener">列表页</a>中获取页面下全部的个分类的链接，然后将分类的链接储存到 url_list 这个collection中。</p>
+</li>
+<li><p>Spider 2 从url_list 中获取储存的链接并解析，获取链接的详情页，将详情页中的想要抓取的信息储存到 item_info 中。</p>
+</li>
+</ul>
+<h3 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h3><p><img src="https://raw.githubusercontent.com/spwii/crawl1/master/liuchengtu.png" alt="liuchengtu"></p>
+<h3 id="code"><a href="#code" class="headerlink" title="code"></a>code</h3><h3 id="首先要观察爬取网站的页面结构"><a href="#首先要观察爬取网站的页面结构" class="headerlink" title="首先要观察爬取网站的页面结构"></a>首先要观察爬取网站的页面结构</h3><ul>
+<li>首先从<a href="http://bj.ganji.com/zhaopin/" target="_blank" rel="noopener">起始页</a>来看，我的目的是将其中的 销售， 行政， 后勤等这样的类别的链接提取出来。</li>
+<li>其次到这样的<a href="http://bj.ganji.com/zpshichangyingxiao/" target="_blank" rel="noopener">类别页</a>中， 我的目的是将 所有招聘职位的链接 爬取下来并储存到url_list表中，</li>
+<li>然后从数据库url_list表中，迭代其中的链接，解析出<a href="http://bj.ganji.com/zpfangjingjiren/2593320747x.htm" target="_blank" rel="noopener">详情页</a>，提取出我想要的信息。就是这样一步一步的深入它的页面结构</li>
+</ul>
+<h3 id="channel-url文件-将招聘板块中的招聘职位分类的链接提取出来。"><a href="#channel-url文件-将招聘板块中的招聘职位分类的链接提取出来。" class="headerlink" title="channel_url文件 将招聘板块中的招聘职位分类的链接提取出来。"></a>channel_url文件 将招聘板块中的招聘职位分类的链接提取出来。</h3><p>这里的 <a href="http://docs.python-requests.org/zh_CN/latest/index.html" target="_blank" rel="noopener">requests</a>:</p>
+<blockquote>
+<p>Requests 唯一的一个非转基因的 Python HTTP 库，人类可以安全享用。</p>
+<p><em>警告：非专业使用其他 HTTP 库会导致危险的副作用，包括：安全缺陷症、冗余代码症、重新发明轮子症、啃文档症、抑郁、头疼、甚至死亡。</em></p>
+</blockquote>
+<p>requests 的基本用法:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="comment"># 发起get请求</span></span><br><span class="line">data = requests.get(<span class="string">'http://www.baidu.com'</span>)</span><br><span class="line"><span class="comment"># 打印data</span></span><br><span class="line">print(data.text)</span><br><span class="line"><span class="comment"># .....</span></span><br><span class="line"><span class="comment"># 其中还可以设置 headers and proxies</span></span><br><span class="line"><span class="comment"># headers 是访问一个网站的头部信息， 通常在可在 chrome的开发者工具中看到</span></span><br><span class="line"><span class="comment"># 如 chrome: 检查 &gt; network &gt; headers</span></span><br><span class="line"><span class="comment"># 使用headers 浏览器请求的头部</span></span><br><span class="line"><span class="comment"># 由于网站可能限制了一个ip访问的频率，所以使用代理ip</span></span><br><span class="line">wed = requests.get(<span class="string">'http://www.bing.com'</span>, headers=headers, proxies=proxies)</span><br></pre></td></tr></table></figure>
+
+<p><em>关于代理ip</em> 可以在 <a href="http://cn-proxy.com/" target="_blank" rel="noopener">http://cn-proxy.com/</a> 找到， 当然也可以写一个爬虫，将代理爬下来,<em>其实有种东西叫代理池</em>.</p>
+<p>有关http的头字段可以参见 <a href="https://zh.wikipedia.org/wiki/HTTP%E5%A4%B4%E5%AD%97%E6%AE%B5%E5%88%97%E8%A1%A8" target="_blank" rel="noopener">http头字段</a></p>
+<p><em>headers 的位置</em>：<br><img src="https://raw.githubusercontent.com/spwii/crawl1/master/headers.png" alt="img"></p>
+<p>这里的 BeautifulSoup and lxml：</p>
+<blockquote>
+<p>Beautiful Soup 是一个可以从HTML或XML文件中提取数据的Python库, 这里我使用 lxml 来解析。</p>
+</blockquote>
+<p><a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc.zh/#" target="_blank" rel="noopener">BeautifulSoup</a> 的基本用法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="comment"># 以下是一个非常经典的写法，其中 data.text是做汤的原料， lxml 是菜谱，BeautifulSoup 将其做成</span></span><br><span class="line">soup = BeautifulSoup(data.text, <span class="string">'lxml'</span>)</span><br><span class="line"><span class="comment"># BeautifulSoup 有 select and find 两种提取信息的方式</span></span><br><span class="line"><span class="comment"># select 用的是css选择器</span></span><br><span class="line">img = soup.select(<span class="string">'#lg &gt; img'</span>)</span><br><span class="line"><span class="comment"># find 方法可以根据标签和属性来提取信息</span></span><br><span class="line">img = soup.find(<span class="string">'img'</span>, &#123;<span class="string">'hidefocus'</span>: <span class="string">"true"</span>&#125;)</span><br><span class="line"><span class="comment"># 此外 find 还有 findAll() and find_all() 方法 可参见文档</span></span><br></pre></td></tr></table></figure>
+
+<p>关于 lxml 可以参见 <a href="http://lxml.de/api.html" target="_blank" rel="noopener">lxml</a></p>
+<p>关于 lxml 与 BeautifulSoup(不同的解析库)的比较， 我写了个文件为 data_plot.ipynb, 可以得到如图:<br><img src="https://raw.githubusercontent.com/spwii/crawl1/master/com_ex.png" alt="images"></p>
+<p>channel_url 中定义了一个函数， 来进行获取链接，我这里将运行的结果，赋给了channel_list, 当然也可以放进数据库。<br><img src="https://raw.githubusercontent.com/spwii/crawl1/master/chanenl_list.png" alt="images"></p>
+<h3 id="page-spider-是进行爬取的主要文件，-其中定义两个函数，是进行爬取信息的两个爬虫。"><a href="#page-spider-是进行爬取的主要文件，-其中定义两个函数，是进行爬取信息的两个爬虫。" class="headerlink" title="page_spider 是进行爬取的主要文件， 其中定义两个函数，是进行爬取信息的两个爬虫。"></a>page_spider 是进行爬取的主要文件， 其中定义两个函数，是进行爬取信息的两个爬虫。</h3><p>这里的 pymongo:</p>
+<blockquote>
+<p>PyMongo is a Python distribution containing tools for working with MongoDB, and is the recommended way to work with MongoDB from Python. This documentation attempts to explain everything you need to know to use PyMongo.</p>
+</blockquote>
+<p>pymongo 的基本用法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pymongo</span><br><span class="line"><span class="comment"># 连接pymongo</span></span><br><span class="line">client = pymongo.MongoClient(<span class="string">'localhost'</span>, <span class="number">27017</span>)</span><br><span class="line"><span class="comment"># 连接到数据库</span></span><br><span class="line">ganji = client[<span class="string">'ganji'</span>]</span><br><span class="line"><span class="comment"># 连接到数据库中的一个表(集合)</span></span><br><span class="line">url_list = ganji[<span class="string">'url_list'</span>]</span><br><span class="line"><span class="comment"># pymongo 的一些方法: 单个插入数据</span></span><br><span class="line">url_list1.insert_one(&#123;<span class="string">'url'</span>: url&#125;)</span><br><span class="line"><span class="comment"># 对数据库中的数据进行计数</span></span><br><span class="line">url_list1.find().count()</span><br></pre></td></tr></table></figure>
+
+<p>关于 <em>正则表达式</em>：<br>python 中的正则表达式为 re模块， 基本用法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="comment"># 进行正则匹配</span></span><br><span class="line">href = re.complie(<span class="string">'^(https?://)?bj\.ganji\.com.*\.htm'</span>)</span><br><span class="line"><span class="comment"># 把正则表达式编译成一个正则表达式对象, 来匹配 href</span></span><br></pre></td></tr></table></figure>
+
+<p>正则表达式可以参见：<a href="http://www.runoob.com/python/python-reg-expressions.html" target="_blank" rel="noopener">正则表达式</a></p>
+<p>正则表达式的测试网站：<a href="http://www.pyregex.com/" target="_blank" rel="noopener">PyRegex</a></p>
+<h4 id="函数-get-link-form："><a href="#函数-get-link-form：" class="headerlink" title="函数 get_link_form："></a>函数 get_link_form：</h4><ol>
+<li><p>url_views 是对其url 的观察构造的，例如 <a href="http://bj.ganji.com/zpshichangyingxiao/o3/" target="_blank" rel="noopener">http://bj.ganji.com/zpshichangyingxiao/o3/</a> 为其第三页的url， 我将其写成 url_views = ‘{0}o{1}/‘.format(channel, str(page)) ， channel 和 page 为这个函数的参数</p>
+</li>
+<li><p>我的计划是爬去100页， 但是有的页面可能没有100页， 用if来判断是否有要爬去的信息，有则爬，无则pass， 具体的判断的依据是 <em>每个页面下都会有的 下一页的选项</em>。</p>
+</li>
+<li><p>由于findAll所返回的对象是一个列表，所以用for循环来进行迭代并储存。</p>
+</li>
+</ol>
+<h4 id="函数-bs-get-item-info-and-lxml-get-item-info"><a href="#函数-bs-get-item-info-and-lxml-get-item-info" class="headerlink" title="函数 bs_get_item_info and lxml_get_item_info"></a>函数 bs_get_item_info and lxml_get_item_info</h4><ol>
+<li>与上一个函数相似，这个主要是将每一个职位招聘的详情信息，提取并储存。但是要判断一下，这个商品是否已经成交或者下架，如果成交或者下架，那么访问这个页面时状态码应该返回 404. 所以用if判断状态码来进行爬去。</li>
+</ol>
+<h3 id="main-文件主要是调用page-spider的爬虫进行爬取"><a href="#main-文件主要是调用page-spider的爬虫进行爬取" class="headerlink" title="main 文件主要是调用page_spider的爬虫进行爬取"></a>main 文件主要是调用page_spider的爬虫进行爬取</h3><p>multiprocessing 为python的多进程模块，采用多进程爬取。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool</span><br><span class="line"><span class="comment"># 如果要启动大量的子进程，可以用进程池的方式批量创建子进程</span></span><br><span class="line">pool = Pool(<span class="number">4</span>)</span><br><span class="line"><span class="keyword">for</span> link <span class="keyword">in</span> url_list1.find(&#123;&#125;, &#123;<span class="string">'_id'</span>: <span class="number">0</span>, <span class="string">'url'</span>: <span class="number">1</span>&#125;):</span><br><span class="line">		pool.apply(get_item_info, args=(link[<span class="string">'url'</span>],))</span><br><span class="line">pool.close()</span><br><span class="line">pool.join()</span><br><span class="line"><span class="comment"># pool = Pool(4) 就可以运行 4 个进程， Pool的默认大小是CPU的核数</span></span><br><span class="line"><span class="comment"># 对Pool对象调用join()方法会等待所有子进程执行完毕，调用join()之前必须先调用close()，调用close()之后就不能继续添加新的Process了</span></span><br><span class="line"><span class="comment"># map 函数是一个语法糖， map 函数接受两个参数， 一个序列， 一个函数， 并把结果通过Iterator(迭代器)返回</span></span><br><span class="line">test = map(<span class="keyword">lambda</span> x: x*x, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>])</span><br><span class="line">test 为 &lt;map object at <span class="number">0x7f998e02c7b8</span>&gt;</span><br><span class="line">list(test)</span><br><span class="line">[<span class="number">1</span>, <span class="number">4</span>, <span class="number">9</span>, <span class="number">16</span>, <span class="number">16</span>, <span class="number">25</span>, <span class="number">36</span>, <span class="number">49</span>, <span class="number">64</span>, <span class="number">81</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="count-文件主要是在main-py-运行时，-每5秒来检查一次数据库中数据的数量。"><a href="#count-文件主要是在main-py-运行时，-每5秒来检查一次数据库中数据的数量。" class="headerlink" title="count 文件主要是在main.py 运行时， 每5秒来检查一次数据库中数据的数量。"></a>count 文件主要是在main.py 运行时， 每5秒来检查一次数据库中数据的数量。</h3><h4 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h4><p><img src="https://raw.githubusercontent.com/spwii/crawl1/master/xiaoguotu1.png" alt="xiaoguotu1"><br><img src="https://raw.githubusercontent.com/spwii/crawl1/master/xiaoguotu2.png" alt="xiaoguotu2"></p>
+<h2 id="爬取结果"><a href="#爬取结果" class="headerlink" title="爬取结果"></a>爬取结果</h2><p>MongoDB中， 其中 url_list的 count 为:<em>120166</em>, item_info的 count为:<em>30726</em>.</p>
+<p>可能是我的url_list先于item_info爬取，url_list有些链接已经失效。</p>
+<h2 id="体会"><a href="#体会" class="headerlink" title="体会"></a>体会</h2><p>我之前写过58同城的爬虫和这个类似， 但是写这个的时候bug明显更多。</p>
+<p>不同的网站会有不同的抓取策略。</p>
+<p><em>写爬虫会有很多的坑，验证码，JavaScript，模拟登录等。</em></p>
+<p>还有一些网站的数据加载方式， 比如美团，美团的数据加载使用的是 ajax(异步加载JavaScript和XML)，用selenium虽然可以,但是效率低。抓包分析效率高，但是很难模仿请求。我比较偏于分析请求。所以要了解网站的一些常见的反爬措施和网页的结构。</p>
+<p>赶集网这种网站页面结构很适合爬取， 但是它对同一ip的访问频率会有限制。</p>
+<p>这个程序的效率还可以优化，<em>例如 使用 lxml 来解析网页， 速度会快很多倍的样子， 还可以利用 异步非阻塞 优化， <em>虽然我不会。 我会继续学习的。</em></em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Spider/" rel="tag"># Spider</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/10/Seleniulm/" rel="next" title="selenium实现浏览器下拉页面">
+                <i class="fa fa-chevron-left"></i> selenium实现浏览器下拉页面
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/21/sqli1/" rel="prev" title="sql-labs Less-1">
+                sql-labs Less-1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/head.jfif"
+                alt="John Doe" />
+            
+              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/spwii" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#依赖"><span class="nav-number">1.</span> <span class="nav-text">依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备"><span class="nav-number">1.1.</span> <span class="nav-text">准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结构"><span class="nav-number">1.2.</span> <span class="nav-text">结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程图"><span class="nav-number">1.3.</span> <span class="nav-text">流程图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#code"><span class="nav-number">1.4.</span> <span class="nav-text">code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#首先要观察爬取网站的页面结构"><span class="nav-number">1.5.</span> <span class="nav-text">首先要观察爬取网站的页面结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#channel-url文件-将招聘板块中的招聘职位分类的链接提取出来。"><span class="nav-number">1.6.</span> <span class="nav-text">channel_url文件 将招聘板块中的招聘职位分类的链接提取出来。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#page-spider-是进行爬取的主要文件，-其中定义两个函数，是进行爬取信息的两个爬虫。"><span class="nav-number">1.7.</span> <span class="nav-text">page_spider 是进行爬取的主要文件， 其中定义两个函数，是进行爬取信息的两个爬虫。</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#函数-get-link-form："><span class="nav-number">1.7.1.</span> <span class="nav-text">函数 get_link_form：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#函数-bs-get-item-info-and-lxml-get-item-info"><span class="nav-number">1.7.2.</span> <span class="nav-text">函数 bs_get_item_info and lxml_get_item_info</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#main-文件主要是调用page-spider的爬虫进行爬取"><span class="nav-number">1.8.</span> <span class="nav-text">main 文件主要是调用page_spider的爬虫进行爬取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#count-文件主要是在main-py-运行时，-每5秒来检查一次数据库中数据的数量。"><span class="nav-number">1.9.</span> <span class="nav-text">count 文件主要是在main.py 运行时， 每5秒来检查一次数据库中数据的数量。</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#效果图"><span class="nav-number">1.9.1.</span> <span class="nav-text">效果图</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#爬取结果"><span class="nav-number">2.</span> <span class="nav-text">爬取结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#体会"><span class="nav-number">3.</span> <span class="nav-text">体会</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

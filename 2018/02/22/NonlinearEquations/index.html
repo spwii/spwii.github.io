@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Matlab,Iteration," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="线性方程是方程式中仅包含未知量的一次方项和常数项的方程，除此之外的方程都是非线性方程，非线性线性方程的求解是数值计算领域的一个重要问题。本文主要表述非线性方程求根方法，用数值方法求得满足一定精度要求的近似解，利用不同的方法来求解非线性方程，然后比较和分析不同方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="非线性方程求根算法设计">
+<meta property="og:url" content="http://yoursite.com/2018/02/22/NonlinearEquations/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="线性方程是方程式中仅包含未知量的一次方项和常数项的方程，除此之外的方程都是非线性方程，非线性线性方程的求解是数值计算领域的一个重要问题。本文主要表述非线性方程求根方法，用数值方法求得满足一定精度要求的近似解，利用不同的方法来求解非线性方程，然后比较和分析不同方法。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://image-1252432001.coscd.myqcloud.com/NonlinearEquations.jpg">
+<meta property="og:image" content="http://image-1252432001.coscd.myqcloud.com/NonlinearEquationsNewton.jpg">
+<meta property="article:published_time" content="2018-02-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-08-04T12:47:56.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Matlab">
+<meta property="article:tag" content="Iteration">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://image-1252432001.coscd.myqcloud.com/NonlinearEquations.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/22/NonlinearEquations/"/>
+
+
+
+
+
+  <title>非线性方程求根算法设计 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/22/NonlinearEquations/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jfif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">非线性方程求根算法设计</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-22T00:00:00+08:00">
+                2018-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index">
+                    <span itemprop="name">课程设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>线性方程是方程式中仅包含未知量的一次方项和常数项的方程，除此之外的方程都是非线性方程，非线性线性方程的求解是数值计算领域的一个重要问题。本文主要表述非线性方程求根方法，用数值方法求得满足一定精度要求的近似解，利用不同的方法来求解非线性方程，然后比较和分析不同方法。</p>
+<a id="more"></a>
+
+<h4 id="线性收敛不动点迭代法"><a href="#线性收敛不动点迭代法" class="headerlink" title="线性收敛不动点迭代法"></a>线性收敛不动点迭代法</h4><h5 id="方法实现"><a href="#方法实现" class="headerlink" title="方法实现"></a>方法实现</h5><p>原方程为：$x^3+2x^2+10x-20=0$,非线性方程可以有以下的改造方式，从而得到不同的迭代函数。原函数：<br>$$<br>φ(x)=x^3+2x^2+10x-20<br>$$<br>I．$x=\frac{20}{(x^2+2x+10)}$对应的迭代方法$x_{k+1}=  φ_1 (x_k )=\frac{20}{(x_k^2+2x_k+10)}$</p>
+<p>II.  $x=\sqrt{\frac{20}{(x+2+\frac{10}{x})}}$对应迭代方法 $x_{k+1}= φ_2 (x_k )=\sqrt{\frac{20}{(x_k+2+\frac{10}{x_k })}}$</p>
+<p>粗略估计根的范围。</p>
+<p>此非线性方程只有一个实根，其余两个为虚根。</p>
+<p><img src="http://image-1252432001.coscd.myqcloud.com/NonlinearEquations.jpg" alt="NonlinearEquations"></p>
+<p>实根的大致范围在(0,2)之间。</p>
+<p>判断收敛性<br>$$<br>φ(1)&lt;0;      φ(1.5)&gt;0<br>$$<br>根据两个迭代函数I，II，判断迭代函数的一阶导数，在[1,1.5]的最大绝对值。<br>$$<br>Max |φ_{1}^{‘} |≈ 0.47337<br>$$</p>
+<p>$$<br>Max |φ_2^{‘} |≈ 0.42935<br>$$</p>
+<p>满足不动点收敛定理，两个迭代函数都收敛。</p>
+<p>利用matlab迭代：</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">result</span> = <span class="title">aciter</span><span class="params">(func)</span></span></span><br><span class="line">x = <span class="number">1.25</span>;</span><br><span class="line"></span><br><span class="line">times = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span>=<span class="number">1</span>:<span class="number">100</span></span><br><span class="line">    check = x;</span><br><span class="line">    x = feval(func, x);</span><br><span class="line">    <span class="built_in">disp</span>(x);</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">abs</span>(check - x) &lt; <span class="number">1e-15</span></span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">    times = times + <span class="number">1</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">result = x;</span><br><span class="line"><span class="built_in">disp</span>(times);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">format long;</span><br><span class="line">x = sym(<span class="string">'x'</span>);</span><br><span class="line">fours = <span class="string">'20/(x^2+2*x+10)'</span>;</span><br><span class="line">sevens = <span class="string">'sqrt(20/(x+2+10/x))'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">% 未加速迭代</span></span><br><span class="line">aciter(inline(fours));</span><br><span class="line">aciter(inline(sevens));</span><br></pre></td></tr></table></figure>
+
+<p>结果如下</p>
+<p>$φ_1$迭代41次，最终收敛于$x^*=1.368808107821373$</p>
+<p>$φ_2$迭代26次，最终收敛于$x^*=1.368808107821373$</p>
+<h5 id="结果分析"><a href="#结果分析" class="headerlink" title="结果分析"></a>结果分析</h5><p>根据非线性方程来改造不同的迭代函数，然后迭代，可以得到近似解，然而迭代收敛速度比较慢。</p>
+<h4 id="加速法"><a href="#加速法" class="headerlink" title="加速法"></a>加速法</h4><h5 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h5><p>加速法可以构造新的不动点函数，迭代收敛速度非常快。</p>
+<p>首先，构造新的不动点函数。<br>$$<br>-0.47337 ≈ φ_1^{‘}(1)≤ φ_1^{‘}(x)  ≤  φ_1^{‘} (1.5) ≈  -0.42999<br>$$<br>因此，可以看出导数变化并不大</p>
+<p>令$L=\frac{(-0.42999+ -0.47337)}{2}= -0.45168$ , 新的加速迭代方法为$x=\frac{(φ_1 (x)-Lx)}{(1-L)}$</p>
+<p>同理验证可以得到的$φ_2$新的不动点函数，然后利用新的不动点函数进行迭代。</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">format long;</span><br><span class="line">x = sym(<span class="string">'x'</span>);</span><br><span class="line"><span class="comment">%构造不同的迭代方法</span></span><br><span class="line">fours = <span class="string">'20/(x^2+2*x+10)'</span>;</span><br><span class="line">sevens = <span class="string">'sqrt(20/(x+2+10/x))'</span>;</span><br><span class="line"><span class="comment">%求其一阶导数</span></span><br><span class="line">dffour = inline(diff(fours, x));</span><br><span class="line">dfseven = inline(diff(sevens, x));</span><br><span class="line"></span><br><span class="line"><span class="comment">% 加速方法</span></span><br><span class="line">sevenL = (dfseven(<span class="number">1.5</span>) + dfseven(<span class="number">1</span>))/<span class="number">2</span>;</span><br><span class="line">fourL = (dffour(<span class="number">1.5</span>) + dffour(<span class="number">1</span>))/<span class="number">2</span>;</span><br><span class="line"><span class="comment">%构造加速法新的迭代函数</span></span><br><span class="line">FourIter = (fours - fourL*x)/(<span class="number">1</span> - fourL);</span><br><span class="line">SevenIter = (sevens - sevenL*x)/(<span class="number">1</span> - sevenL);</span><br><span class="line"></span><br><span class="line"><span class="comment">% 未加速的迭代</span></span><br><span class="line"><span class="comment">% aciter(inline(fours));</span></span><br><span class="line"><span class="comment">% aciter(inline(sevens));</span></span><br><span class="line"></span><br><span class="line"><span class="comment">% 加速迭代</span></span><br><span class="line">aciter(inline(FourIter));</span><br><span class="line">aciter(inline(SevenIter));</span><br></pre></td></tr></table></figure>
+
+<h5 id="结果分析-1"><a href="#结果分析-1" class="headerlink" title="结果分析"></a>结果分析</h5><p>最终两个迭代函数都收敛于$x^*= 1.368808107821373$,对比未使用加速法的迭代函数：</p>
+<table>
+<thead>
+<tr>
+<th>迭代次数(达到收敛)</th>
+<th>未加速</th>
+<th>加速</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$φ_1$</td>
+<td>41</td>
+<td>6</td>
+</tr>
+<tr>
+<td>$φ_2$</td>
+<td>26</td>
+<td>13</td>
+</tr>
+</tbody></table>
+<p>可见迭代加速对迭代次数有着很大的提升。</p>
+<h4 id="二分法"><a href="#二分法" class="headerlink" title="二分法"></a>二分法</h4><h5 id="实现方法-1"><a href="#实现方法-1" class="headerlink" title="实现方法"></a>实现方法</h5><p>二分法求解非线性方程的近似解，将零点存在的区间，每次把区间二等分，给出两个等分区间中有根的那个区间，达到把区间缩小的目的，那么区间的中点就是一个很好的近似解。但是二分法的计算效率不够高。</p>
+<h5 id="算法流程"><a href="#算法流程" class="headerlink" title="算法流程"></a>算法流程</h5><p>利用伪码描述算法流程</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">输入：a, b, 函数 f(x) ; 输出：x. </span><br><span class="line"><span class="keyword">While</span> (𝑏 − 𝑎) &gt;𝜀 do </span><br><span class="line">𝑥:= 𝑎 + (𝑏 − 𝑎)/<span class="number">2</span> ;</span><br><span class="line"><span class="keyword">If</span> sign(𝑓(𝑥)) = sign(𝑓(𝑎)) then </span><br><span class="line">𝑎:= 𝑥 ; </span><br><span class="line">Else </span><br><span class="line">𝑏: = 𝑥 ; </span><br><span class="line"><span class="keyword">End</span> </span><br><span class="line"><span class="keyword">End</span> </span><br><span class="line">𝑥:= 𝑎 + (𝑏 − 𝑎)/<span class="number">2</span> .</span><br><span class="line">% sign()表示取符号的函数</span><br><span class="line">%而二分迭代结束的条件为有根区间(a, b)的长度小于某个阈值𝜀. </span><br><span class="line">%浮点运算中几乎不可能出现等于 <span class="number">0</span> 的情况</span><br><span class="line">%所以sign()函数的结果只是正号、或负号</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% 二分法</span></span><br><span class="line">format long;</span><br><span class="line">f = inline(<span class="string">'x^3+2*x^2+10*x-20'</span>);</span><br><span class="line"><span class="comment">% 估计根的区间</span></span><br><span class="line"><span class="comment">% ezplot('x^3+2*x^2+10*x-20'); </span></span><br><span class="line"><span class="comment">% grid on;</span></span><br><span class="line">a = <span class="number">0</span>;</span><br><span class="line">b = <span class="number">2</span>;</span><br><span class="line"><span class="comment">% 设置精度</span></span><br><span class="line">tol = <span class="number">1e-15</span>;</span><br><span class="line"></span><br><span class="line">k = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">while</span> <span class="built_in">true</span></span><br><span class="line">    A(k) = a;</span><br><span class="line">    B(k) = b;</span><br><span class="line">    ya = feval(f, a);</span><br><span class="line">    yb = feval(f, b);</span><br><span class="line">    temp = (a+b)/<span class="number">2</span>;</span><br><span class="line">    M(k) = temp;</span><br><span class="line">    yt = feval(f, temp);</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">abs</span>(yt) &lt;tol</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">if</span> yt*ya &lt; <span class="number">0</span></span><br><span class="line">        a = a;</span><br><span class="line">        b = temp;</span><br><span class="line"><span class="keyword">elseif</span> yt*yb &lt; <span class="number">0</span></span><br><span class="line">        a = temp;</span><br><span class="line">        b = b;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">    k = k + <span class="number">1</span>;</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="结果分析-2"><a href="#结果分析-2" class="headerlink" title="结果分析"></a>结果分析</h5><p>程序运行后，迭代48次后，最终收敛于$x^* = 1.368808107821373$</p>
+<p>二分法效率较差，但是简单易懂。</p>
+<h4 id="牛顿迭代法"><a href="#牛顿迭代法" class="headerlink" title="牛顿迭代法"></a>牛顿迭代法</h4><h5 id="实现方法-2"><a href="#实现方法-2" class="headerlink" title="实现方法"></a>实现方法</h5><p>牛顿法实际上就是迭代函数为$\varphi(x)=x- \frac{f(x)}{f^{‘}(x)}$的不动点迭代法，牛顿法也可以看成一种特别的加速方法。牛顿法也依赖初值的选取。</p>
+<h5 id="结果分析-3"><a href="#结果分析-3" class="headerlink" title="结果分析"></a>结果分析</h5><p>其算法流程本质就是迭代</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">result</span> = <span class="title">Newton</span><span class="params">(x0)</span></span></span><br><span class="line">format long;</span><br><span class="line"></span><br><span class="line"><span class="comment">% 牛顿迭代法</span></span><br><span class="line">syms x;</span><br><span class="line">fu(x) = x^<span class="number">3</span>+<span class="number">2</span>*x^<span class="number">2</span>+<span class="number">10</span>*x<span class="number">-20</span>;</span><br><span class="line">df = diff(fu,x);</span><br><span class="line">fun = x - fu/df;</span><br><span class="line">func = inline(fun);</span><br><span class="line"><span class="comment">% 开始迭代</span></span><br><span class="line">times = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:<span class="number">100</span></span><br><span class="line">    checks = x0;</span><br><span class="line">    x0 = feval(func, x0);</span><br><span class="line"><span class="keyword">if</span> <span class="built_in">abs</span>(checks - x0) &lt; <span class="number">1e-15</span></span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">    times = times + <span class="number">1</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="built_in">disp</span>(times);</span><br><span class="line">result = x0;</span><br></pre></td></tr></table></figure>
+
+<p>牛顿法依赖初值的选取，对于不同的初值，迭代次数如下</p>
+<table>
+<thead>
+<tr>
+<th>初值</th>
+<th>100</th>
+<th>10</th>
+<th>1</th>
+<th>1.3</th>
+<th>0</th>
+<th>-10</th>
+<th>-100</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>迭代次数</td>
+<td>14</td>
+<td>8</td>
+<td>5</td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+<td>15</td>
+</tr>
+</tbody></table>
+<p><img src="http://image-1252432001.coscd.myqcloud.com/NonlinearEquationsNewton.jpg" alt="imgs"></p>
+<p>可见初值的选取，会影响迭代次数.</p>
+<h4 id="割线法"><a href="#割线法" class="headerlink" title="割线法"></a>割线法</h4><h5 id="实现方法-3"><a href="#实现方法-3" class="headerlink" title="实现方法"></a>实现方法</h5><p>牛顿法计算时，需要计算导数，在某些情景下，会有很大的计算量，割线法使用近似计算的方法代替牛顿法中的导数，不需要计算导数，避免了在某些情景下导数的计算量很大的问题。也是一种不动点迭代方法。</p>
+<p>迭代函数：<br>$$<br>x_{k+1}=x_k- \frac{f(x_k )(x_k-x_{k-1} )} {f(x_k )-f(x_{k-1} ) }<br>$$</p>
+<h5 id="结果分析-4"><a href="#结果分析-4" class="headerlink" title="结果分析"></a>结果分析</h5><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">format long;</span><br><span class="line">f = inline(<span class="string">'x^3+2*x^2+10*x-20'</span>);</span><br><span class="line"><span class="comment">% 估计根的区间</span></span><br><span class="line"><span class="comment">% ezplot('x^3+2*x^2+10*x-20'); </span></span><br><span class="line"><span class="comment">% grid on;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">% 割线法</span></span><br><span class="line">a(<span class="built_in">i</span>) = <span class="number">0</span>;</span><br><span class="line">b(<span class="built_in">i</span>) = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">x = b(<span class="built_in">i</span>);</span><br><span class="line"><span class="built_in">i</span> = <span class="number">1</span>;</span><br><span class="line"><span class="comment">%设置迭代次数</span></span><br><span class="line"><span class="keyword">while</span> <span class="built_in">i</span>&lt;<span class="number">10</span></span><br><span class="line"><span class="comment">%迭代函数</span></span><br><span class="line">    x = b(<span class="built_in">i</span>) - (b(<span class="built_in">i</span>) - a(<span class="built_in">i</span>))/(feval(f, b(<span class="built_in">i</span>))-feval(f, a(<span class="built_in">i</span>)))*feval(f, b(<span class="built_in">i</span>));</span><br><span class="line">    <span class="built_in">disp</span>(x);</span><br><span class="line">    <span class="built_in">i</span> = <span class="built_in">i</span> + <span class="number">1</span>;</span><br><span class="line">    a(<span class="built_in">i</span>) = b(<span class="built_in">i</span> - <span class="number">1</span>);</span><br><span class="line">    b(<span class="built_in">i</span>) = x;</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>10次迭代结果如下:</p>
+<table>
+<thead>
+<tr>
+<th>1.111111111111111</th>
+<th>2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1.324296141814390</td>
+<td>3</td>
+</tr>
+<tr>
+<td>1.372252278803517</td>
+<td>4</td>
+</tr>
+<tr>
+<td>1.368763504207928</td>
+<td>5</td>
+</tr>
+<tr>
+<td>1.368808063373287</td>
+<td>6</td>
+</tr>
+<tr>
+<td>1.368808107821947</td>
+<td>7</td>
+</tr>
+<tr>
+<td>1.368808107821373</td>
+<td>8</td>
+</tr>
+<tr>
+<td>1.368808107821373</td>
+<td>9</td>
+</tr>
+<tr>
+<td>NaN</td>
+<td>10</td>
+</tr>
+</tbody></table>
+<p>程序在8次迭代时就得到了较为准确的解，迭代效果不错.</p>
+<h4 id="算法分析与比较"><a href="#算法分析与比较" class="headerlink" title="算法分析与比较"></a>算法分析与比较</h4><h5 id="结果综述"><a href="#结果综述" class="headerlink" title="结果综述"></a>结果综述</h5><p>根据以上方法的结果可得：</p>
+<table>
+<thead>
+<tr>
+<th>迭代方法</th>
+<th>线性收敛不动点迭代</th>
+<th>线性收敛不动点迭代(加速)</th>
+<th>二分法</th>
+<th>牛顿法</th>
+<th>割线法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>迭代次数  (最优的)</td>
+<td>26</td>
+<td>6</td>
+<td>48</td>
+<td>4</td>
+<td>8</td>
+</tr>
+</tbody></table>
+<p>可见初值选择合适的牛顿迭代，效率非常高。构造合适的迭代函数，然后加速计算效率也是非常可观的。</p>
+<h5 id="牛顿法综述"><a href="#牛顿法综述" class="headerlink" title="牛顿法综述"></a>牛顿法综述</h5><p>但是“合适”有时是很模糊的，牛顿法在近似解附近收敛速度非常快，也说明牛顿法对初值的选取是很敏感的，而且牛顿法需要求导，有些时候导数并不好求，这也限制了牛顿的适用范围。为了防止牛顿法发散，加入条件$|f(x_(k+1) )|&lt;|f(x_k )|$,要求单减，可以改进牛顿法，即牛顿下山法。</p>
+<h5 id="二分法综述"><a href="#二分法综述" class="headerlink" title="二分法综述"></a>二分法综述</h5><p>优点很明显，简单易用，并且因为在不断的分割区间，所以总是收敛的。</p>
+<p>缺点也很明显，收敛速度很慢，不能求复根，还要已知近似解的上下界，给定近似解的区间。</p>
+<h5 id="割线法综述"><a href="#割线法综述" class="headerlink" title="割线法综述"></a>割线法综述</h5><p>割线法算是牛顿法一种变形，不用求导，避免有些函数不易求导。但需要两步的值，收敛速度也很快，且不用给定初值。</p>
+<h5 id="不动点迭代综述"><a href="#不动点迭代综述" class="headerlink" title="不动点迭代综述"></a>不动点迭代综述</h5><p>不动点迭代法，因为可以有多种迭代函数，所以产生的迭代序列有可能收敛快，也可能收敛慢，也可能不收敛。对于收敛的迭代序列，利用加速法计算能提高收敛速度，其实牛顿法，割线法都可以看成一种不动点迭代，牛顿法也是一种加速方法。</p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p>[1]同济大学计算数学教研室，现代数值计算第2版，北京：人民邮电出版，2014年。</p>
+<p>[2]喻文健 , 数值分析与算法，北京：清华大学出版社，2012年。</p>
+<p>[3]许振华， 数值分析实验指导书，郑州：郑州轻工业学院，2017。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Matlab/" rel="tag"># Matlab</a>
+          
+            <a href="/tags/Iteration/" rel="tag"># Iteration</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/22/PageRank/" rel="next" title="PageRank算法">
+                <i class="fa fa-chevron-left"></i> PageRank算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/09/optimization/" rel="prev" title="随机优化算法">
+                随机优化算法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/head.jfif"
+                alt="John Doe" />
+            
+              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/spwii" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#线性收敛不动点迭代法"><span class="nav-number">1.</span> <span class="nav-text">线性收敛不动点迭代法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#方法实现"><span class="nav-number">1.1.</span> <span class="nav-text">方法实现</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结果分析"><span class="nav-number">1.2.</span> <span class="nav-text">结果分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#加速法"><span class="nav-number">2.</span> <span class="nav-text">加速法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#实现方法"><span class="nav-number">2.1.</span> <span class="nav-text">实现方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结果分析-1"><span class="nav-number">2.2.</span> <span class="nav-text">结果分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二分法"><span class="nav-number">3.</span> <span class="nav-text">二分法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#实现方法-1"><span class="nav-number">3.1.</span> <span class="nav-text">实现方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#算法流程"><span class="nav-number">3.2.</span> <span class="nav-text">算法流程</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结果分析-2"><span class="nav-number">3.3.</span> <span class="nav-text">结果分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#牛顿迭代法"><span class="nav-number">4.</span> <span class="nav-text">牛顿迭代法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#实现方法-2"><span class="nav-number">4.1.</span> <span class="nav-text">实现方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结果分析-3"><span class="nav-number">4.2.</span> <span class="nav-text">结果分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#割线法"><span class="nav-number">5.</span> <span class="nav-text">割线法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#实现方法-3"><span class="nav-number">5.1.</span> <span class="nav-text">实现方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结果分析-4"><span class="nav-number">5.2.</span> <span class="nav-text">结果分析</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#算法分析与比较"><span class="nav-number">6.</span> <span class="nav-text">算法分析与比较</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#结果综述"><span class="nav-number">6.1.</span> <span class="nav-text">结果综述</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#牛顿法综述"><span class="nav-number">6.2.</span> <span class="nav-text">牛顿法综述</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#二分法综述"><span class="nav-number">6.3.</span> <span class="nav-text">二分法综述</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#割线法综述"><span class="nav-number">6.4.</span> <span class="nav-text">割线法综述</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#不动点迭代综述"><span class="nav-number">6.5.</span> <span class="nav-text">不动点迭代综述</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文献"><span class="nav-number">7.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

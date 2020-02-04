@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,SVM,MachineLearn," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="上篇SMO算法已推导完成，本篇在于核函数，编程实现一个完整的SVM分类过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SVM-编程实现算法">
+<meta property="og:url" content="http://yoursite.com/2019/07/23/SVM3/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="上篇SMO算法已推导完成，本篇在于核函数，编程实现一个完整的SVM分类过程。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image-1252432001.cos.ap-chengdu.myqcloud.com/SVM/kernel.jpg">
+<meta property="og:image" content="https://image-1252432001.cos.ap-chengdu.myqcloud.com/SVM/svmresult.png">
+<meta property="article:published_time" content="2019-07-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-08-04T12:44:14.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="SVM">
+<meta property="article:tag" content="MachineLearn">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-1252432001.cos.ap-chengdu.myqcloud.com/SVM/kernel.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/07/23/SVM3/"/>
+
+
+
+
+
+  <title>SVM-编程实现算法 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/23/SVM3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jfif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SVM-编程实现算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-23T00:00:00+08:00">
+                2019-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/SVM/" itemprop="url" rel="index">
+                    <span itemprop="name">SVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上篇SMO算法已推导完成，本篇在于核函数，编程实现一个完整的SVM分类过程。</p>
+<a id="more"></a>
+
+<h3 id="核函数"><a href="#核函数" class="headerlink" title="核函数"></a>核函数</h3><p>SVM处理线性可分的情况上面已经推导，而对于非线性的情况，由于线性不可分，SVM通过某种事先选择的非线性映射（核函数）将输入变量映到一个高维特征空间，将其变成在高维空间线性可分，在这个高维空间中寻找最优分类超平面。</p>
+<p>在线性可分的情形下，超平面方程为：<br>$$<br>f(x)=\sum_{i=1}^n \alpha_iy_i\langle x_i, x \rangle +b<br>$$<br>线性不可分的情形下, 寻找一个非线性的映射到高维的特征空间。<br>$$<br>f(x)=\sum_{i=1}^n \alpha_iy_i\langle \Phi(x_i), \Phi(x) \rangle +b<br>$$<br>其中，$\Phi$为输入空间X到特征空间F的映射，核函数方法就是直接计算内积$\langle \Phi(x_i), \Phi(x) \rangle$，就如线性可分时的函数一样。</p>
+<p><img src="https://image-1252432001.cos.ap-chengdu.myqcloud.com/SVM/kernel.jpg" alt="示例"></p>
+<p>对于图中的例子，通过变换将椭圆转为直线，将非线性分类问题变换为线性分类问题。</p>
+<p>假设原空间为$\mathcal{X}\subset R^2, x=(x^{(1)}, x^{(2)})^T$, 新空间为$\mathcal{Z}\subset R^2, z=(z^{(1)},z^{(2)})^T$, 从原空间到新空间的变换(映射)为:<br>$$<br>z=\Phi(x)=((x^{(1)})^2, (x^{(2)})^2)^T<br>$$<br>经过变换，原空间中的点相应地变换为新空间中的点，原空间中的椭圆<br>$$<br>w_1(x^{(1)})^2+w_2(x^{(2)})^2+b=0<br>$$<br>变换为新空间中的直线<br>$$<br>w_1z^{(1)}+w_2z^{(2)}+b=0<br>$$<br>在新空间中直线$w_1z^{(1)}+w_2z^{(2)}+b=0$可以将变换后的正负实例点正确的分开，这样就解决了非线性不可分的问题。</p>
+<blockquote>
+<p>核函数的定义</p>
+</blockquote>
+<p>设$\mathcal{X}$时输入空间(欧式空间$R^n$的子集或者离散集合)，又设$\mathcal{H}$为特征空间(希尔伯特空间)，如果存在一个从$\mathcal{X}$到$\mathcal{H}$的映射<br>$$<br>\phi(x):\mathcal{X}\rightarrow\mathcal{H}<br>$$<br>使得对所有$x, z\in\mathcal{X}$，函数$\mathcal{K}(x,z)$满足条件<br>$$<br>\mathcal{K}(x,z)=\phi(x)\cdot \phi(z)<br>$$<br>称$\mathcal{K}(x,z)$为核函数，$\phi(x)$为映射函数，其中$\phi(x)\cdot\phi(z)$为$\phi(x)$和$\phi(z)$的内积</p>
+<p>核技巧就是在学习和预测中只定义核函数$\mathcal{K}(x,z)$，而不显式地定义映射函数$\phi$，通常情况下，直接计算$\mathcal{K}(x,z)$比较容易，而通过$\phi(x),\phi(z)$来计算$\mathcal{K}(x,z)$并不容易，$\phi$是输入空间$R^n$到特征空间$\mathcal{H}$的映射，特征空间$H$一般是高维空间，甚至为无穷维。可以看到，对于给定的核$\mathcal{K}(x,z)$，特征空间$H$和映射函数$\phi$的取法并不唯一，可以取不同的特征空间，即便是在同一特征空间里也可以取不同的映射。</p>
+<p>核函数与映射的关系</p>
+<blockquote>
+<p>假设输入空间$R^2$，核函数是$K(x,z)=(x,z)^2$，试找出相关的特征空间$\mathcal{H}$和映射$\phi(x):R^2\rightarrow\mathcal{H}$</p>
+</blockquote>
+<p>取特征空间$\mathcal{H}=R^3$, 记$x=(x^{(1)},x^{(2)})^T, z=(z^{(1)},z^{(2)})^T$, 由于<br>$$<br>(x\cdot z)=(x^{(1)}z^{(1)}+x^{(2)}z^{(2)})^2\\<br>\Rightarrow (x^{(1)}z^{(1)})^2+2x^{(1)}z^{(1)}x^{(2)}z^{(2)}+(x^{(2)}z^{(2)})^2<br>$$<br>所以可以取映射<br>$$<br>\phi(x)=((x^{(1)})^2, \sqrt2x^{(1)}x^{(2)}, (x^{(2)})^2)^T<br>$$<br>易证$\phi(x)\phi(z)=(x\cdot z)^2=\mathcal{K}(x,z)$</p>
+<p>仍然取$\mathcal{H}=R^3$以及<br>$$<br>\phi(x)=\frac{1}{\sqrt2}((x^{(1)})^2-(x^{(2)})^2, 2x^{(1)}x^{(2)}, (x^{(1)})^2+(x^{(2)})^2)^T<br>$$<br>同样有$\phi(x)\phi(z)=(x\cdot z)^2=\mathcal{K}(x,z)$， 故映射不唯一</p>
+<h3 id="SVM手写体识别"><a href="#SVM手写体识别" class="headerlink" title="SVM手写体识别"></a>SVM手写体识别</h3><p>首先导入第三方库，建立数据结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">import numpy as np</span><br><span class="line">import random</span><br><span class="line"></span><br><span class="line">class optStruct:</span><br><span class="line"></span><br><span class="line">    def __init__(self, dataMatIn, classLabels, C, toler, kTup):</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        数据结构，维护所有需要操作的值</span><br><span class="line">        Parameters：</span><br><span class="line">            dataMatIn - 数据矩阵</span><br><span class="line">            classLabels - 数据标签</span><br><span class="line">            C - 松弛变量</span><br><span class="line">            toler - 容错率</span><br><span class="line">            kTup - 包含核函数信息的元组,第一个参数存放核函数类别，</span><br><span class="line">            第二个参数存放必要的核函数需要用到的参数</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        # 数据矩阵</span><br><span class="line">        self.X &#x3D; dataMatIn</span><br><span class="line">        # 数据标签</span><br><span class="line">        self.labelMat &#x3D; classLabels</span><br><span class="line">        # 松弛变量</span><br><span class="line">        self.C &#x3D; C</span><br><span class="line">        # 容错率</span><br><span class="line">        self.tol &#x3D; toler</span><br><span class="line">        # 数据矩阵的行数</span><br><span class="line">        self.m &#x3D; np.shape(dataMatIn)[0]</span><br><span class="line">        # 初始化alphas参数为0</span><br><span class="line">        self.alphas &#x3D; np.mat(np.zeros((self.m, 1)))</span><br><span class="line">        # 初始化b参数为0</span><br><span class="line">        self.b &#x3D; 0</span><br><span class="line">        # 初始化误差缓存,第一列为是否有效的标志位,第二列为实际的误差E的值。</span><br><span class="line">        self.eCache &#x3D; np.mat(np.zeros((self.m, 2)))</span><br><span class="line">        # 初始化核</span><br><span class="line">        self.K &#x3D; np.mat(np.zeros((self.m, self.m)))</span><br><span class="line">        # 计算所有数据的核</span><br><span class="line">        for i in range(self.m):</span><br><span class="line">            self.K[:, i] &#x3D; kernelTrans(self.x, self.x[i, :], kTup)</span><br></pre></td></tr></table></figure>
+
+<p>核函数的应用和实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">def kernelTrans(X, A, kTup):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    通过核函数将数据转换更高维的空间</span><br><span class="line">    参数:</span><br><span class="line">        X: 数据矩阵</span><br><span class="line">        A: 单个数据的向量</span><br><span class="line">        kTup: 包含核函数信息的元组</span><br><span class="line">    返回:</span><br><span class="line">        K: 计算的核k</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    m, _ &#x3D; np.shape(X)</span><br><span class="line">    K &#x3D; np.mat(np.zeros((m, 1)))</span><br><span class="line">    if kTup[0] &#x3D;&#x3D; &#39;lin&#39;:</span><br><span class="line">        # 线性核函数, 只进行内积</span><br><span class="line">        K &#x3D; X * A.T</span><br><span class="line">    elif kTup[0] &#x3D;&#x3D; &#39;rbf&#39;:</span><br><span class="line">        # 高斯核函数</span><br><span class="line">        for j in range(m):</span><br><span class="line">            deltaRow &#x3D; X[j,:] - A</span><br><span class="line">            K[j] &#x3D; deltaRow * deltaRow.T</span><br><span class="line">        K &#x3D; np.exp(K &#x2F; (-1 * kTup[1]** 2))</span><br><span class="line">    else:</span><br><span class="line">        raise NameError(&#39;核函数无法识别&#39;)</span><br><span class="line"></span><br><span class="line">    return K</span><br></pre></td></tr></table></figure>
+
+<p>读取数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">def loadDataSet(fileName):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    读取数据</span><br><span class="line">    参数:</span><br><span class="line">        fileName: 文件名</span><br><span class="line">    返回:</span><br><span class="line">        dataMat: 数据矩阵</span><br><span class="line">        labelMat: 数据标签</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    dataMat &#x3D; []</span><br><span class="line">    labelMat &#x3D; []</span><br><span class="line">    fr &#x3D; open(fileName)</span><br><span class="line">    for line in fr.readlines():</span><br><span class="line">        lineArr &#x3D; line.strip().split(&#39;\t&#39;)</span><br><span class="line">        dataMat.append([float(lineArr[0]), float(lineArr[1])])</span><br><span class="line">        labelMat.append(float(lineArr[2]))</span><br><span class="line">    return dataMat, labelMat</span><br></pre></td></tr></table></figure>
+
+<p>误差计算</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">def calcEk(ops, k):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    计算误差</span><br><span class="line">    参数：</span><br><span class="line">        ops: 数据结构</span><br><span class="line">        k: 标号为k的数据</span><br><span class="line">    返回：</span><br><span class="line">        Ek: 标号为k的数据误差</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    fxk &#x3D; float(np.multiply(ops.alphas, ops.labelMat).T * ops.K[:, k] + ops.b)</span><br><span class="line">    Ek &#x3D; fxk - float(ops.labelMat[k])</span><br><span class="line">    return Ek</span><br></pre></td></tr></table></figure>
+
+<p>启发式选择</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">def selectJrand(i, m):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    随机选择alpha_j 的索引</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    j &#x3D; i</span><br><span class="line">    while (j &#x3D;&#x3D; i):</span><br><span class="line">        j &#x3D; int(random.uniform(0, m))</span><br><span class="line">    return j</span><br><span class="line"></span><br><span class="line">def selectJ(i, ops, Ei):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    内循环启发方式</span><br><span class="line">    参数:</span><br><span class="line">        i: 标号为i的数据的索引值</span><br><span class="line">        ops: 数据结构</span><br><span class="line">        Ei: 标号为i的数据误差</span><br><span class="line">    返回:</span><br><span class="line">        j,maxK: 标号为j或maxK的数据索引值</span><br><span class="line">        Ej: 标号为j的数据误差</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    # 初始化</span><br><span class="line">    maxK &#x3D; -1</span><br><span class="line">    maxDeltaE &#x3D; 0</span><br><span class="line">    Ej &#x3D; 0</span><br><span class="line">    # 根据Ei更新误差</span><br><span class="line">    ops.eCache[i] &#x3D; [1, Ei]</span><br><span class="line">    # 返回误差不为0的数据的索引值</span><br><span class="line">    validEcacheList &#x3D; np.nonzero(ops.eCache[:, 0].A)[0]</span><br><span class="line">    # 有不为0的误差</span><br><span class="line">    if (len(validEcacheList)) &gt; 1:</span><br><span class="line">        # 遍历找到最大的Ek</span><br><span class="line">        for k in validEcacheList:</span><br><span class="line">            # 不计算i, 浪费时间</span><br><span class="line">            if k &#x3D;&#x3D; i:</span><br><span class="line">                continue</span><br><span class="line">            # 计算Ek</span><br><span class="line">            Ek &#x3D; calcEk(ops, k)</span><br><span class="line">            # 计算|Ei-Ek|</span><br><span class="line">            deltaE &#x3D; abs(Ei - Ek)</span><br><span class="line">            # 找到最大的DeltaE</span><br><span class="line">            if (deltaE &gt; maxDeltaE):</span><br><span class="line">                maxK &#x3D; k</span><br><span class="line">                maxDeltaE &#x3D; deltaE</span><br><span class="line">                Ej &#x3D; Ek</span><br><span class="line">        # 返回maxk, Ej</span><br><span class="line">        return maxK, Ej</span><br><span class="line">    # 没有不为0的误差</span><br><span class="line">    else:</span><br><span class="line">        # 随机选择j</span><br><span class="line">        j &#x3D; selectJrand(i, ops.m)</span><br><span class="line">        # 计算Ej</span><br><span class="line">        Ej &#x3D; calcEk(ops, j)</span><br><span class="line">    return j, Ej</span><br></pre></td></tr></table></figure>
+
+<p>更新误差</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def updateEk(ops, k):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    计算Ek, 并更新误差缓存</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    # 计算Ek</span><br><span class="line">    Ek &#x3D; calcEk(ops, k)</span><br><span class="line">    # 更新误差缓存</span><br><span class="line">    ops.eCache[k] &#x3D; [1, Ek]</span><br></pre></td></tr></table></figure>
+
+<p>修剪$\alpha_j$</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def clipAlpha(aj, H, L):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    修剪alpha</span><br><span class="line">    参数:</span><br><span class="line">        aj: alphaj的值</span><br><span class="line">        H: alpha上限</span><br><span class="line">        L: alpha下限</span><br><span class="line">    返回:</span><br><span class="line">        aj: 修剪后alphaj的值 </span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    if aj &gt; H:</span><br><span class="line">        aj &#x3D; H</span><br><span class="line">    if L &gt; aj:</span><br><span class="line">        aj &#x3D; L</span><br><span class="line">    return aj</span><br></pre></td></tr></table></figure>
+
+<p>图片转向量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def img2vector(filename):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    将32x32的二进制图像转换为1x1024向量。</span><br><span class="line">    Parameters:</span><br><span class="line">        filename - 文件名</span><br><span class="line">    Returns:</span><br><span class="line">        returnVect - 返回的二进制图像的1x1024向量</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    returnVect &#x3D; np.zeros((1,1024))</span><br><span class="line">    fr &#x3D; open(filename)</span><br><span class="line">    for i in range(32):</span><br><span class="line">        lineStr &#x3D; fr.readline()</span><br><span class="line">        for j in range(32):</span><br><span class="line">            returnVect[0,32*i+j] &#x3D; int(lineStr[j])</span><br><span class="line">    return returnVect</span><br></pre></td></tr></table></figure>
+
+<p>加载图像</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">def loadImages(dirName):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    加载图片</span><br><span class="line">    Parameters:</span><br><span class="line">        dirName - 文件夹的名字</span><br><span class="line">    Returns:</span><br><span class="line">        trainingMat - 数据矩阵</span><br><span class="line">        hwLabels - 数据标签</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    from os import listdir</span><br><span class="line">    hwLabels &#x3D; []</span><br><span class="line">    trainingFileList &#x3D; listdir(dirName)</span><br><span class="line">    m &#x3D; len(trainingFileList)</span><br><span class="line">    trainingMat &#x3D; np.zeros((m,1024))</span><br><span class="line">    for i in range(m):</span><br><span class="line">        fileNameStr &#x3D; trainingFileList[i]</span><br><span class="line">        fileStr &#x3D; fileNameStr.split(&#39;.&#39;)[0]</span><br><span class="line">        classNumStr &#x3D; int(fileStr.split(&#39;_&#39;)[0])</span><br><span class="line">        if classNumStr &#x3D;&#x3D; 9: hwLabels.append(-1)</span><br><span class="line">        else: hwLabels.append(1)</span><br><span class="line">        trainingMat[i,:] &#x3D; img2vector(&#39;%s&#x2F;%s&#39; % (dirName, fileNameStr))</span><br><span class="line">    return trainingMat, hwLabels</span><br></pre></td></tr></table></figure>
+
+<p>优化的SMO算法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">def innerL(i, oS):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    优化的SMO算法</span><br><span class="line">    Parameters：</span><br><span class="line">        i - 标号为i的数据的索引值</span><br><span class="line">        oS - 数据结构</span><br><span class="line">    Returns:</span><br><span class="line">        1 - 有任意一对alpha值发生变化</span><br><span class="line">        0 - 没有任意一对alpha值发生变化或变化太小</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    #步骤1：计算误差Ei</span><br><span class="line">    Ei &#x3D; calcEk(oS, i)</span><br><span class="line">    #优化alpha,设定一定的容错率。</span><br><span class="line">    if ((oS.labelMat[i] * Ei &lt; -oS.tol) and (oS.alphas[i] &lt; oS.C)) or ((oS.labelMat[i] * Ei &gt; oS.tol) and (oS.alphas[i] &gt; 0)):</span><br><span class="line">        #使用内循环启发方式2选择alpha_j,并计算Ej</span><br><span class="line">        j,Ej &#x3D; selectJ(i, oS, Ei)</span><br><span class="line">        #保存更新前的aplpha值，使用深拷贝</span><br><span class="line">        alphaIold &#x3D; oS.alphas[i].copy(); alphaJold &#x3D; oS.alphas[j].copy();</span><br><span class="line">        #步骤2：计算上下界L和H</span><br><span class="line">        if (oS.labelMat[i] !&#x3D; oS.labelMat[j]):</span><br><span class="line">            L &#x3D; max(0, oS.alphas[j] - oS.alphas[i])</span><br><span class="line">            H &#x3D; min(oS.C, oS.C + oS.alphas[j] - oS.alphas[i])</span><br><span class="line">        else:</span><br><span class="line">            L &#x3D; max(0, oS.alphas[j] + oS.alphas[i] - oS.C)</span><br><span class="line">            H &#x3D; min(oS.C, oS.alphas[j] + oS.alphas[i])</span><br><span class="line">        if L &#x3D;&#x3D; H:</span><br><span class="line">            print(&quot;L&#x3D;&#x3D;H&quot;)</span><br><span class="line">            return 0</span><br><span class="line">        #步骤3：计算eta</span><br><span class="line">        eta &#x3D; 2.0 * oS.K[i,j] - oS.K[i,i] - oS.K[j,j]</span><br><span class="line">        if eta &gt;&#x3D; 0:</span><br><span class="line">            print(&quot;eta&gt;&#x3D;0&quot;)</span><br><span class="line">            return 0</span><br><span class="line">        #步骤4：更新alpha_j</span><br><span class="line">        oS.alphas[j] -&#x3D; oS.labelMat[j] * (Ei - Ej)&#x2F;eta</span><br><span class="line">        #步骤5：修剪alpha_j</span><br><span class="line">        oS.alphas[j] &#x3D; clipAlpha(oS.alphas[j],H,L)</span><br><span class="line">        #更新Ej至误差缓存</span><br><span class="line">        updateEk(oS, j)</span><br><span class="line">        if (abs(oS.alphas[j] - alphaJold) &lt; 0.00001):</span><br><span class="line">            print(&quot;alpha_j变化太小&quot;)</span><br><span class="line">            return 0</span><br><span class="line">        #步骤6：更新alpha_i</span><br><span class="line">        oS.alphas[i] +&#x3D; oS.labelMat[j]*oS.labelMat[i]*(alphaJold - oS.alphas[j])</span><br><span class="line">        #更新Ei至误差缓存</span><br><span class="line">        updateEk(oS, i)</span><br><span class="line">        #步骤7：更新b_1和b_2</span><br><span class="line">        b1 &#x3D; oS.b - Ei- oS.labelMat[i]*(oS.alphas[i]-alphaIold)*oS.K[i,i] - oS.labelMat[j]*(oS.alphas[j]-alphaJold)*oS.K[i,j]</span><br><span class="line">        b2 &#x3D; oS.b - Ej- oS.labelMat[i]*(oS.alphas[i]-alphaIold)*oS.K[i,j]- oS.labelMat[j]*(oS.alphas[j]-alphaJold)*oS.K[j,j]</span><br><span class="line">        #步骤8：根据b_1和b_2更新b</span><br><span class="line">        if (0 &lt; oS.alphas[i]) and (oS.C &gt; oS.alphas[i]): oS.b &#x3D; b1</span><br><span class="line">        elif (0 &lt; oS.alphas[j]) and (oS.C &gt; oS.alphas[j]): oS.b &#x3D; b2</span><br><span class="line">        else: oS.b &#x3D; (b1 + b2)&#x2F;2.0</span><br><span class="line">        return 1</span><br><span class="line">    else:</span><br><span class="line">        return 0</span><br></pre></td></tr></table></figure>
+
+<p>优化后完整的SMO算法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">def smoP(dataMatIn, classLabels, C, toler, maxIter, kTup &#x3D; (&#39;lin&#39;,0)):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    完整的线性SMO算法</span><br><span class="line">    Parameters：</span><br><span class="line">        dataMatIn - 数据矩阵</span><br><span class="line">        classLabels - 数据标签</span><br><span class="line">        C - 松弛变量</span><br><span class="line">        toler - 容错率</span><br><span class="line">        maxIter - 最大迭代次数</span><br><span class="line">        kTup - 包含核函数信息的元组</span><br><span class="line">    Returns:</span><br><span class="line">        oS.b - SMO算法计算的b</span><br><span class="line">        oS.alphas - SMO算法计算的alphas</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    oS &#x3D; optStruct(np.mat(dataMatIn), np.mat(classLabels).transpose(), C, toler, kTup)                #初始化数据结构</span><br><span class="line">    iter &#x3D; 0                                                                                         #初始化当前迭代次数</span><br><span class="line">    entireSet &#x3D; True; alphaPairsChanged &#x3D; 0</span><br><span class="line">    while (iter &lt; maxIter) and ((alphaPairsChanged &gt; 0) or (entireSet)):                            #遍历整个数据集都alpha也没有更新或者超过最大迭代次数,则退出循环</span><br><span class="line">        alphaPairsChanged &#x3D; 0</span><br><span class="line">        if entireSet:                                               #遍历整个数据集</span><br><span class="line">            for i in range(oS.m):</span><br><span class="line">                alphaPairsChanged +&#x3D; innerL(i,oS)                                                    #使用优化的SMO算法</span><br><span class="line">                print(&quot;全样本遍历:第%d次迭代 样本:%d, alpha优化次数:%d&quot; % (iter,i,alphaPairsChanged))</span><br><span class="line">            iter +&#x3D; 1</span><br><span class="line">        else:                                                                                         #遍历非边界值</span><br><span class="line">            nonBoundIs &#x3D; np.nonzero((oS.alphas.A &gt; 0) * (oS.alphas.A &lt; C))[0]                        #遍历不在边界0和C的alpha</span><br><span class="line">            for i in nonBoundIs:</span><br><span class="line">                alphaPairsChanged +&#x3D; innerL(i,oS)</span><br><span class="line">                print(&quot;非边界遍历:第%d次迭代 样本:%d, alpha优化次数:%d&quot; % (iter,i,alphaPairsChanged))</span><br><span class="line">            iter +&#x3D; 1</span><br><span class="line">        if entireSet:                                                                                #遍历一次后改为非边界遍历</span><br><span class="line">            entireSet &#x3D; False</span><br><span class="line">        elif (alphaPairsChanged &#x3D;&#x3D; 0):                                                                #如果alpha没有更新,计算全样本遍历</span><br><span class="line">            entireSet &#x3D; True </span><br><span class="line">        print(&quot;迭代次数: %d&quot; % iter)</span><br><span class="line">    return oS.b,oS.alphas</span><br></pre></td></tr></table></figure>
+
+<p>手写体识别的测试函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">def testDigits(kTup&#x3D;(&#39;rbf&#39;, 10)):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    测试函数</span><br><span class="line">    Parameters:</span><br><span class="line">        kTup - 包含核函数信息的元组</span><br><span class="line">    Returns:</span><br><span class="line">        无</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    dataArr,labelArr &#x3D; loadImages(&#39;trainingDigits&#39;)</span><br><span class="line">    b,alphas &#x3D; smoP(dataArr, labelArr, 200, 0.0001, 10, kTup)</span><br><span class="line">    datMat &#x3D; np.mat(dataArr); labelMat &#x3D; np.mat(labelArr).transpose()</span><br><span class="line">    svInd &#x3D; np.nonzero(alphas.A&gt;0)[0]</span><br><span class="line">    sVs&#x3D;datMat[svInd]</span><br><span class="line">    labelSV &#x3D; labelMat[svInd];</span><br><span class="line">    print(&quot;支持向量个数:%d&quot; % np.shape(sVs)[0])</span><br><span class="line">    m,n &#x3D; np.shape(datMat)</span><br><span class="line">    errorCount &#x3D; 0</span><br><span class="line">    for i in range(m):</span><br><span class="line">        kernelEval &#x3D; kernelTrans(sVs,datMat[i,:],kTup)</span><br><span class="line">        predict&#x3D;kernelEval.T * np.multiply(labelSV,alphas[svInd]) + b</span><br><span class="line">        if np.sign(predict) !&#x3D; np.sign(labelArr[i]): errorCount +&#x3D; 1</span><br><span class="line">    print(&quot;训练集错误率: %.2f%%&quot; % (float(errorCount)&#x2F;m))</span><br><span class="line">    dataArr,labelArr &#x3D; loadImages(&#39;testDigits&#39;)</span><br><span class="line">    errorCount &#x3D; 0</span><br><span class="line">    datMat &#x3D; np.mat(dataArr); labelMat &#x3D; np.mat(labelArr).transpose()</span><br><span class="line">    m,n &#x3D; np.shape(datMat)</span><br><span class="line">    for i in range(m):</span><br><span class="line">        kernelEval &#x3D; kernelTrans(sVs,datMat[i,:],kTup)</span><br><span class="line">        predict&#x3D;kernelEval.T * np.multiply(labelSV,alphas[svInd]) + b</span><br><span class="line">        if np.sign(predict) !&#x3D; np.sign(labelArr[i]): errorCount +&#x3D; 1</span><br><span class="line">    print(&quot;测试集错误率: %.2f%%&quot; % (float(errorCount)&#x2F;m))</span><br></pre></td></tr></table></figure>
+
+<p>运行结果为<br><img src="https://image-1252432001.cos.ap-chengdu.myqcloud.com/SVM/svmresult.png" alt="svmresult"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/SVM/" rel="tag"># SVM</a>
+          
+            <a href="/tags/MachineLearn/" rel="tag"># MachineLearn</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/19/SVM2/" rel="next" title="SVM-SMO算法">
+                <i class="fa fa-chevron-left"></i> SVM-SMO算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/07/AdaBoost/" rel="prev" title="提升方法-AdaBoost">
+                提升方法-AdaBoost <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/head.jfif"
+                alt="John Doe" />
+            
+              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/spwii" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#核函数"><span class="nav-number">1.</span> <span class="nav-text">核函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SVM手写体识别"><span class="nav-number">2.</span> <span class="nav-text">SVM手写体识别</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

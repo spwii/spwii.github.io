@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,CS231N,KNN," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="文章主要是对Stanford的CS231n的作业做一次记录。  Q1: k-Nearest Neighbor classifier (20 points)The IPython Notebook knn.ipynb will walk you through implementing the kNN classifier.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KNN 分类图片">
+<meta property="og:url" content="http://yoursite.com/2019/04/17/knn_img/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="文章主要是对Stanford的CS231n的作业做一次记录。  Q1: k-Nearest Neighbor classifier (20 points)The IPython Notebook knn.ipynb will walk you through implementing the kNN classifier.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://image-1252432001.cos.ap-chengdu.myqcloud.com/blog/knn/cc88207c6c3c5e91df8b6367368f6450_hd.jpg">
+<meta property="article:published_time" content="2019-04-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-08-04T12:46:44.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="CS231N">
+<meta property="article:tag" content="KNN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://image-1252432001.cos.ap-chengdu.myqcloud.com/blog/knn/cc88207c6c3c5e91df8b6367368f6450_hd.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/17/knn_img/"/>
+
+
+
+
+
+  <title>KNN 分类图片 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/17/knn_img/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jfif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">KNN 分类图片</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-17T00:00:00+08:00">
+                2019-04-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/CS231N/" itemprop="url" rel="index">
+                    <span itemprop="name">CS231N</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>文章主要是对Stanford的CS231n的作业做一次记录。</p>
+<blockquote>
+<p>Q1: k-Nearest Neighbor classifier (20 points)<br>The IPython Notebook knn.ipynb will walk you through implementing the kNN classifier.</p>
+</blockquote>
+<a id="more"></a>
+
+<p>利用KNN算法来分类图片，图片数据集来自CIFAR10.</p>
+<h4 id="导入数据集"><a href="#导入数据集" class="headerlink" title="导入数据集"></a>导入数据集</h4><p>数据集为二进制文件，需要做一下处理，分别返回训练集和测试集。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">def unpickle(file):</span><br><span class="line">    return pickle.load(file, encoding&#x3D;&#39;latin1&#39;)</span><br><span class="line">def loadCifarbatch(f):</span><br><span class="line">    file &#x3D; open(f, &#39;rb&#39;)</span><br><span class="line">    datadict &#x3D; unpickle(file)</span><br><span class="line">    X &#x3D; datadict[&#39;data&#39;]</span><br><span class="line">    Y &#x3D; datadict[&#39;labels&#39;]</span><br><span class="line">    X &#x3D; X.reshape(10000, 3, 32, 32).transpose(0, 2, 3, 1).astype(&quot;float&quot;)</span><br><span class="line">    Y &#x3D; np.array(Y)</span><br><span class="line">    return X, Y</span><br><span class="line">def loadCifar10(root):</span><br><span class="line">    xs &#x3D; []</span><br><span class="line">    ys &#x3D; []</span><br><span class="line">    for b in range(1, 6):</span><br><span class="line">        f &#x3D; os.path.join(root, &#39;data_batch_&#123;&#125;&#39;.format(b))</span><br><span class="line">        X, Y &#x3D; loadCifarbatch(f)</span><br><span class="line">        xs.append(X)</span><br><span class="line">        ys.append(Y)</span><br><span class="line">    Xtr &#x3D; np.concatenate(xs)</span><br><span class="line">    Ytr &#x3D; np.concatenate(ys)</span><br><span class="line">    del X, Y</span><br><span class="line">    Xte, Yte &#x3D; loadCifarbatch(os.path.join(root, &#39;test_batch&#39;))</span><br><span class="line">    return Xtr, Ytr, Xte, Yte</span><br></pre></td></tr></table></figure>
+
+<h4 id="构建分类器"><a href="#构建分类器" class="headerlink" title="构建分类器"></a>构建分类器</h4><p>由于数据集数据很多，这里选择一部分。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">num_training &#x3D; 5000</span><br><span class="line">mask &#x3D; list(range(num_training))</span><br><span class="line">X_train &#x3D; X_train[mask]</span><br><span class="line">y_train &#x3D; y_train[mask]</span><br><span class="line"></span><br><span class="line">num_test &#x3D; 500</span><br><span class="line">mask &#x3D; list(range(num_test))</span><br><span class="line">X_test &#x3D; X_test[mask]</span><br><span class="line">y_test &#x3D; y_test[mask]</span><br></pre></td></tr></table></figure>
+<p>计算图片之间的距离，函数中写了三个函数，分别是两次循环，一次循环，不写循环来求解距离矩阵，这里的距离采用欧式距离来计算。后来经过比对不写循环的效率最高。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">class KNearestNeighbor(object):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    def train(self, x, y):</span><br><span class="line">        self.x_train &#x3D; x</span><br><span class="line">        self.y_train &#x3D; y</span><br><span class="line">    </span><br><span class="line">    def predict(self, x, k&#x3D;1, num_loop&#x3D;0):</span><br><span class="line"></span><br><span class="line">        if num_loop&#x3D;&#x3D;0:</span><br><span class="line">            dists &#x3D; self.compute_distance_no_loop(x)</span><br><span class="line">        elif num_loop&#x3D;&#x3D;1:</span><br><span class="line">            dists &#x3D; self.compute_distance_one_loop(x)</span><br><span class="line">        elif num_loop&#x3D;&#x3D;2:</span><br><span class="line">            dists &#x3D; self.compute_distance_two_loop(x)</span><br><span class="line">        else:</span><br><span class="line">            raise ValueError(&#39;Invalid value %d for num_loop&#39;%num_loop)</span><br><span class="line">        </span><br><span class="line">        return self.predict_labels(dists, k&#x3D;k)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    def compute_distance_two_loop(self, x):</span><br><span class="line">        num_test &#x3D; x.shape[0]</span><br><span class="line">        num_train &#x3D; self.x_train.shape[0]</span><br><span class="line"></span><br><span class="line">        dists &#x3D; np.zeros((num_test, num_train))</span><br><span class="line">        for i in range(num_test):</span><br><span class="line">            for j in range(num_train):</span><br><span class="line">                # 求解两张图片之间的欧式距离</span><br><span class="line">                dists[i][j] &#x3D; np.sqrt(np.sum((x[i]-self.x_train[j])**2))</span><br><span class="line">        </span><br><span class="line">        return dists</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    def compute_distance_one_loop(self, x):</span><br><span class="line">        num_test &#x3D; x.shape[0]</span><br><span class="line">        num_train &#x3D; self.x_train.shape[0]</span><br><span class="line"></span><br><span class="line">        dists &#x3D; np.zeros((num_test, num_train))</span><br><span class="line">        for i in range(num_test):</span><br><span class="line">            # </span><br><span class="line">            dists[i,:] &#x3D; np.sqrt(np.sum((x[i]-self.x_train)**2, axis&#x3D;1))</span><br><span class="line">            # 利用了广播的功能来求欧式距离</span><br><span class="line">            # sum(m, axis&#x3D;1) 计算每行的和</span><br><span class="line">            # sum(m, axis&#x3D;0) 计算每列的和</span><br><span class="line">        </span><br><span class="line">        return dists</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    def compute_distance_no_loop(self, x):</span><br><span class="line">        num_test &#x3D; x.shape[0]</span><br><span class="line">        num_train &#x3D; self.x_train.shape[0]</span><br><span class="line"></span><br><span class="line">        # 即将欧式距离公式展开计算</span><br><span class="line">        dists &#x3D; np.zeros((num_test, num_train))</span><br><span class="line">        dists +&#x3D; np.sum(self.x_train**2, axis&#x3D;1).reshape(1, num_train)</span><br><span class="line">        # 广播的应用 shape &#x3D; (1, 5000)</span><br><span class="line">        dists +&#x3D; np.sum(x**2, axis&#x3D;1).reshape(num_test, 1)</span><br><span class="line">        # 广播的应用 shape &#x3D; (500, 1)</span><br><span class="line">        dists -&#x3D; 2*np.dot(x, self.x_train.T)</span><br><span class="line">        dists &#x3D; np.sqrt(dists)</span><br><span class="line"></span><br><span class="line">        return dists</span><br><span class="line">    </span><br><span class="line">    def predict_labels(self, dists, k&#x3D;1):</span><br><span class="line">        num_test &#x3D; dists.shape[0]</span><br><span class="line">        y_pred &#x3D; np.zeros(num_test)</span><br><span class="line">        for i in range(num_test):</span><br><span class="line">            closest_y &#x3D; []</span><br><span class="line">            closest_y &#x3D; self.y_train[np.argsort(dists[i])[:k]]</span><br><span class="line">            # 求最近的k个标签</span><br><span class="line">            y_pred[i] &#x3D; np.argmax(np.bincount(closest_y))</span><br><span class="line"></span><br><span class="line">        return y_pre</span><br></pre></td></tr></table></figure>
+
+<h4 id="交叉验证"><a href="#交叉验证" class="headerlink" title="交叉验证"></a>交叉验证</h4><p>有时候，训练集数量较小（因此验证集的数量更小），人们会使用一种被称为交叉验证的方法，这种方法更加复杂些。还是用刚才的例子，如果是交叉验证集，我们就不是取1000个图像，而是将训练集平均分成5份，其中4份用来训练，1份用来验证。然后我们循环着取其中4份来训练，其中1份来验证，最后取所有5次验证结果的平均值作为算法验证结果。<br><img src="https://image-1252432001.cos.ap-chengdu.myqcloud.com/blog/knn/cc88207c6c3c5e91df8b6367368f6450_hd.jpg" alt="cross"></p>
+<p>迭代所有情况，分别求出准确率。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">num_folds &#x3D; 5</span><br><span class="line">    k_choices &#x3D; [1,3,5,8,10,12,15,20,50,100]</span><br><span class="line"></span><br><span class="line">    x_train_folds &#x3D; []</span><br><span class="line">    y_train_folds &#x3D; []</span><br><span class="line"></span><br><span class="line">    # 分割训练集</span><br><span class="line">    x_train_folds &#x3D; np.array_split(x_train, num_folds)</span><br><span class="line">    y_train_folds &#x3D; np.array_split(y_train, num_folds)</span><br><span class="line"></span><br><span class="line">    k_to_accuracies &#x3D; &#123;&#125;</span><br><span class="line"></span><br><span class="line">    classifier &#x3D; KNearestNeighbor()</span><br><span class="line">    for k in k_choices:</span><br><span class="line">        accuracies &#x3D; np.zeros(num_folds)</span><br><span class="line">        for fold in range(num_folds):</span><br><span class="line">            temp_x &#x3D; x_train_folds[:]</span><br><span class="line">            # 将x_train_folds[:] 赋予temp_x</span><br><span class="line">            temp_y &#x3D; y_train_folds[:]</span><br><span class="line">            x_validate_fold &#x3D; temp_x.pop(fold)</span><br><span class="line">            # 构建验证集</span><br><span class="line">            y_validate_fold &#x3D; temp_y.pop(fold)</span><br><span class="line"></span><br><span class="line">            temp_x &#x3D; np.array([y for x in temp_x for y in x])</span><br><span class="line">            # 构建数据集</span><br><span class="line">            temp_y &#x3D; np.array([y for x in temp_y for y in x])</span><br><span class="line">            classifier.train(temp_x, temp_y)</span><br><span class="line"></span><br><span class="line">            y_test_pred &#x3D; classifier.predict(x_validate_fold, k&#x3D;k)</span><br><span class="line">            num_correct &#x3D; np.sum(y_test_pred &#x3D;&#x3D; y_validate_fold)</span><br><span class="line">            accuracy &#x3D; float(num_correct)&#x2F;num_test</span><br><span class="line">            accuracies[fold] &#x3D; accuracy</span><br><span class="line">        k_to_accuracies[k] &#x3D; accuracies</span><br><span class="line">    </span><br><span class="line">    # 输出准确率</span><br><span class="line">    for k in sorted(k_to_accuracies):</span><br><span class="line">        for accuarcy in k_to_accuracies[k]:</span><br><span class="line">            print(&#39;k&#x3D;%d, accuracy&#x3D;%f&#39; % (k, accuracy))</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/CS231N/" rel="tag"># CS231N</a>
+          
+            <a href="/tags/KNN/" rel="tag"># KNN</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/09/optimization/" rel="next" title="随机优化算法">
+                <i class="fa fa-chevron-left"></i> 随机优化算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/19/Linearclassifier/" rel="prev" title="线性分类">
+                线性分类 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/head.jfif"
+                alt="John Doe" />
+            
+              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/spwii" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#导入数据集"><span class="nav-number">1.</span> <span class="nav-text">导入数据集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构建分类器"><span class="nav-number">2.</span> <span class="nav-text">构建分类器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#交叉验证"><span class="nav-number">3.</span> <span class="nav-text">交叉验证</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

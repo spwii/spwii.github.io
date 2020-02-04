@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,CS231N,Gradient," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="什么是梯度一元函数的导数就是它的梯度，在多元函数中偏导就是它的梯度。 如一元函数$f(x) &#x3D; (x-a)^2$的导数是$\frac{df}{dx}&#x3D;2(x-a)$ 对一元函数的求导公式如下：$$\displaystyle\frac{df(x)}{dx}&#x3D;\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$$ 有二元函数$f(x_1,x_2)&#x3D;x_1^2+x_1x_2-3x_2$">
+<meta property="og:type" content="article">
+<meta property="og:title" content="梯度下降">
+<meta property="og:url" content="http://yoursite.com/2019/06/01/gradient/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="什么是梯度一元函数的导数就是它的梯度，在多元函数中偏导就是它的梯度。 如一元函数$f(x) &#x3D; (x-a)^2$的导数是$\frac{df}{dx}&#x3D;2(x-a)$ 对一元函数的求导公式如下：$$\displaystyle\frac{df(x)}{dx}&#x3D;\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$$ 有二元函数$f(x_1,x_2)&#x3D;x_1^2+x_1x_2-3x_2$">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-05-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-08-04T12:45:56.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="CS231N">
+<meta property="article:tag" content="Gradient">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/06/01/gradient/"/>
+
+
+
+
+
+  <title>梯度下降 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/01/gradient/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jfif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">梯度下降</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-01T00:00:00+08:00">
+                2019-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/CS231N/" itemprop="url" rel="index">
+                    <span itemprop="name">CS231N</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="什么是梯度"><a href="#什么是梯度" class="headerlink" title="什么是梯度"></a>什么是梯度</h2><p>一元函数的导数就是它的梯度，在多元函数中偏导就是它的梯度。</p>
+<p>如一元函数$f(x) = (x-a)^2$的导数是$\frac{df}{dx}=2(x-a)$</p>
+<p>对一元函数的求导公式如下：<br>$$\displaystyle\frac{df(x)}{dx}=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$$</p>
+<p>有二元函数$f(x_1,x_2)=x_1^2+x_1x_2-3x_2$.<br>那么它的梯度为：<br>$$\nabla f=(\frac{\partial f}{\partial x_1 }, \frac{\partial f}{\partial x_2})=(2x_1+x_2, x_1-3)$$</p>
+<p>如果取在点(1,1)的梯度值，则为(3, -2)</p>
+<a id="more"></a>
+
+<h2 id="什么是梯度下降"><a href="#什么是梯度下降" class="headerlink" title="什么是梯度下降"></a>什么是梯度下降</h2><p>在凸优化问题中，局部的最优解一定是全局最优解，也就是说在凸优化问题中导数为0(梯度为0向量)为最优解。</p>
+<p>梯度的方向是函数增长速度最快的方向，那么梯度的反方向就是函数减少最快的方向。<br>为了寻找最优解，我们可以沿着梯度的反方向进行线性搜索，每次搜索的步长设为$\alpha$，直到梯度与0向量接近。这就是梯度下降方法。</p>
+<p>算法步骤如下：</p>
+<p>(1) i=0时，设置初始点$x^0 = (x_1^0,x_2^0,…,x_n^0)$，设置步长也称学习率$\alpha$，设置迭代的误差阈值$tol$</p>
+<p>(2) 计算目标函数在x^i上的梯度$\nabla fx^i$</p>
+<p>(3) 计算${x}^{i+1}$, 公式如下：<br>$${x}^{i+1} = x^i - \alpha \nabla f x^i$$</p>
+<p>(4) 计算梯度$\nabla f{x}^{i+1}$，如果$|\nabla f_{\textbf{x}^{i+1}}|_2\leq tol$则迭代停止，则最优解为${x}^{i+1}$，如果梯度的二范数大于$tol$，那么i=i+1，并返回(3)。</p>
+<h2 id="full-batch-gradient-descent"><a href="#full-batch-gradient-descent" class="headerlink" title="full-batch gradient descent"></a>full-batch gradient descent</h2><p>我们通常会有一个损失函数$L(\beta)$，其中向量$β=(β0,β1,⋯,βn)$是模型中的参数，我们需要找到最优的$\beta$来最小化损失函数$L(\beta)$。所以说，模型的训练过程也就是寻找最优解的过程。</p>
+<p>利用一个简单的回归问题为例，自变量x，预测变量y，模型如下：<br>$$y=\beta_0 + \beta_1 x$$</p>
+<p>$\beta(\beta_0, \beta_1)$为回归系数，最小二乘法的函数$L(\beta)$为损失函数:<br>$$L(\beta)=\frac{1}{N}\sum_{j=1}^{N} (y_j-\hat y_j)^2=\sum_{j=1}^N \frac{1}{N}(\beta_0+\beta_1 x_j - \hat y_j)^2$$</p>
+<p>其中$\hat y_j$为第j个样本的真实值，$y_j$为根据回归系数预测的第j个样本的预测值。</p>
+<p>计算损失函数的梯度：<br>$$\nabla L(\beta)=(\frac{\partial L}{\partial \beta_0}, \frac{\partial L}{\partial \beta_1})=(\frac{2}{N}\sum_{j=1}^{N} (\beta_0 + \beta_1 x_j - \hat y_j), \frac{2}{N}\sum_{j=1}^{N} x_j(\beta_0 + \beta_1 x_j - y_j))$$</p>
+<p>重复梯度下降的算法步骤可以寻找到最优的回归系数。</p>
+<p>利用真实数据进行梯度下降的代码实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">import numpy as np</span><br><span class="line">import pandas as pd</span><br><span class="line"></span><br><span class="line"># 导入数据</span><br><span class="line">######</span><br><span class="line"># 初始设置</span><br><span class="line"># 初始值</span><br><span class="line">beta &#x3D; [1, 1]</span><br><span class="line"># 学习率</span><br><span class="line">alpha &#x3D; 0.2</span><br><span class="line"># 阈值</span><br><span class="line">tol_L &#x3D; 0.1</span><br><span class="line"></span><br><span class="line"># 对x进行归一化</span><br><span class="line">max_x &#x3D; max(train[&#39;id&#39;])</span><br><span class="line">x &#x3D; train[&#39;id&#39;] &#x2F; max_x</span><br><span class="line">y &#x3D; train[&#39;questions&#39;]</span><br><span class="line"></span><br><span class="line"># 定义计算梯度的函数</span><br><span class="line">def compute_grad(beta, x, y):</span><br><span class="line">    grad &#x3D; [0, 0]</span><br><span class="line">    grad[0] &#x3D; 2. * np.mean(beta[0] + beta[1] * x - y)</span><br><span class="line">    grad[1] &#x3D; 2. * np.mean(x * (beta[0] + beta[1] * x - y))</span><br><span class="line">    return np.array(grad)</span><br><span class="line"></span><br><span class="line"># 定义更新beta的函数</span><br><span class="line">def update_beta(beta, alpha, grad):</span><br><span class="line">    new_beta &#x3D; np.array(beta) - alpha * grad</span><br><span class="line">    return new_beta</span><br><span class="line"></span><br><span class="line"># 定义计算RMSE的函数</span><br><span class="line"># RMSE--&gt;root of mean square error</span><br><span class="line"># root of mean squared error</span><br><span class="line">def rmse(beta, x, y):</span><br><span class="line">    squared_err &#x3D; (beta[0] + beta[1] * x - y) ** 2</span><br><span class="line">    res &#x3D; np.sqrt(np.mean(squared_err))</span><br><span class="line">    return res</span><br><span class="line"></span><br><span class="line"># 进行第一次计算</span><br><span class="line">grad &#x3D; compute_grad(beta, x, y)</span><br><span class="line">loss &#x3D; rmse(beta, x, y)</span><br><span class="line">beta &#x3D; update_beta(beta, alpha, grad)</span><br><span class="line">loss_new &#x3D; rmse(beta, x, y)</span><br><span class="line"></span><br><span class="line"># 开始迭代</span><br><span class="line">i &#x3D; 1</span><br><span class="line">while np.abs(loss_new - loss) &gt; tol_L:</span><br><span class="line">    beta &#x3D; update_beta(beta, alpha, grad)</span><br><span class="line">    grad &#x3D; compute_grad(beta, x, y)</span><br><span class="line">    loss &#x3D; loss_new</span><br><span class="line">    loss_new &#x3D; rmse(beta, x, y)</span><br><span class="line">    i +&#x3D; 1</span><br><span class="line">    print(&#39;Round %s Diff RMSE %s&#39;%(i, abs(loss_new - loss)))</span><br><span class="line">print(&#39;Coef: %s \nIntercept %s&#39;%(beta[1], beta[0]))</span><br></pre></td></tr></table></figure>
+
+<h2 id="随机梯度下降"><a href="#随机梯度下降" class="headerlink" title="随机梯度下降"></a>随机梯度下降</h2><p>随机梯度下降法(Stochastic Gradient Decent, SGD)是对普通梯度下降法计算效率的改进算法。本质上来说，我们预期随机梯度下降法得到的结果和普通梯度下降法相接近；SGD的优势是更快地计算梯度。</p>
+<p>在full-batch gradient descent中梯度计算<br>$$\nabla L(\beta)=(\frac{\partial L}{\partial \beta_0}, \frac{\partial L}{\partial \beta_1})=(\frac{2}{N}\sum_{j=1}^{N} (\beta_0 + \beta_1 x_j - \hat y_j), \frac{2}{N}\sum_{j=1}^{N} x_j(\beta_0 + \beta_1 x_j - y_j))$$</p>
+<p>可以看出计算一次梯度的代价很大，随机梯度下降可以降低计算梯度的代价。也即是说SGD适合在大样本的训练。</p>
+<p>SGD在计算梯度时，并不使用全部的样本，而是随机选取一个样本$(x_r, \hat y_r)$。<br>$$\nabla L(\beta) = (\frac{\partial L}{\partial \beta_0 }, \frac{\partial L}{\partial \beta_1})=(2(\beta_0 + \beta_1 x_r -\hat{y_r}), 2x_r(\beta_0 + \beta_1x_r - \hat{y_r})$$</p>
+<p>上面代码中计算梯度可以更改为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def compute_grad_SGD(beta, x, y):</span><br><span class="line">    grad &#x3D; [0, 0]</span><br><span class="line">    r &#x3D; np.random.randint(0, len(x))</span><br><span class="line">    grad[0] &#x3D; 2. * np.mean(beta[0] + beta[1] * x[r] - y[r])</span><br><span class="line">    grad[1] &#x3D; 2. * np.mean(x[r] * (beta[0] + beta[1] * x[r] - y[r]))</span><br><span class="line">    return np.array(grad)</span><br></pre></td></tr></table></figure>
+
+<p>SGD尽管加快了每次迭代的计算速度，但是也带了收敛不稳定的缺陷。<br>全批量梯度下降虽然稳定，但速度较慢；SGD虽然快，但是不够稳定。</p>
+<h2 id="Mini-batch-Stochastic-Gradient-Decent"><a href="#Mini-batch-Stochastic-Gradient-Decent" class="headerlink" title="Mini-batch Stochastic Gradient Decent"></a>Mini-batch Stochastic Gradient Decent</h2><p>Mini-batch Stochastic Gradient Decent 是对上面两种方法身的中和的产物。</p>
+<p>Mini-batch Stochastic Gradient Decent的关键是不同于其他两种方法，使用b个随机不同的样本来计算梯度<br>$$\nabla L(\beta) = (\frac{\partial L}{\partial \beta_0}, \frac{\partial L}{\partial \beta_1})=(\frac{2}{b}\sum_{j=1}^{b} (\beta_0 + \beta_1x_j-\hat{y_j}), \frac{2}{b}\sum_{j=1}^{b}x_j(\beta_0 + \beta_1x_j-\hat{y_j})$$</p>
+<p>可以看出当b=1时，此时与随机梯度下降相同，当b=N时，此时与<br>full-batch gradient descent相同。参数b的选择会影响方法的实现，应该根据样本的大小来确定b的值。</p>
+<p>计算梯度的函数代码为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def compute_grad_batch(beta, batch_size, x, y):</span><br><span class="line">    grad &#x3D; [0, 0]</span><br><span class="line">    r &#x3D; np.random.choice(range(len(x)), batch_size, replace&#x3D;False)</span><br><span class="line">    grad[0] &#x3D; 2. * np.mean(beta[0] + beta[1] * x[r] - y[r])</span><br><span class="line">    grad[1] &#x3D; 2. * np.mean(x[r] * (beta[0] + beta[1] * x[r] - y[r]))</span><br><span class="line">    return np.array(grad)</span><br></pre></td></tr></table></figure>
+
+<h2 id="SVM-损失函数的梯度推导"><a href="#SVM-损失函数的梯度推导" class="headerlink" title="SVM 损失函数的梯度推导"></a>SVM 损失函数的梯度推导</h2><p>SVM的损失函数想要SVM在正确分类上的得分始终比不正确分类上的得分高出一个边界值 $\Delta$。放在线性分类其中就是，第i个数据中包含图像$x_i$的像素和代表正确类别的标签$y_i$。评分函数输入像素数据，然后通过公式$f(x_i,W)$来计算不同分类类别的分值。这里我们将分值简写为s。比如，针对第j个类别的得分就是第j个元素：$s_j=f(x_i,W)_j$。针对第i个数据的多类SVM的损失函数定义如下：</p>
+<p>$$\displaystyle L_i=\sum_{j\not=y_i}max(0,s_j-s_{y_i}+\Delta)$$<br>利用线性评分函数$(f(x_i,W)=Wx_i)$，可以将损失函数的公式改写为：<br>$$\displaystyle L_i=\sum_{j\not=y_i}max(0,w^T_jx_i-w^T_{y_i}x_i+\Delta)$$</p>
+<blockquote>
+<p>$x_i$示第i个样本,为行向量。假设有N个样本,特征个数为D</p>
+<p>$y_j$表示该样本的label，假设有C个类</p>
+<p>Δ是margin</p>
+<p>$w_j$为第j个类的权重，为长度为D的列向量。</p>
+<p>$w_j$为我们要学习的参数，总共有C∗D 个，用W表示.</p>
+</blockquote>
+<p>损失函数$L_i$关于W的梯度可以表示为：<br>$$\frac{\partial{L_i}}{\partial{w}}=[\frac{d{L_i}}{d{w_1}},\frac{d{L_i}}{d{w_2}},…,\frac{d{L_i}}{d{w_c}}]=\left( \begin{array}{ccc}\frac{d{L_i}}{d{w_{11}}} &amp; \frac{d{L_i}}{d{w_{12}}} &amp; \ldots &amp; \frac{d{L_i}}{d{w_{c1}}}\\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\frac{d{L_i}}{d{w_{1d}}} &amp; \frac{d{L_i}}{d{w_{2d}}} &amp; \ldots &amp; \frac{d{L_i}}{d{w_{cd}}}\end{array}\right)$$</p>
+<p>分析矩阵的一个元素：$\frac{d{L_i}}{d{w_{11}}}$<br>其中：<br>$$<br>\begin{aligned}<br>Li=&amp;max(0,xi1w11+xi2w12…+xiDw1D−xi1wyi1−xi2wyi2…\\&amp;−xiDwyiD+Δ)+max(0,xi1w21+xi2w22…+xiDw2D\\&amp;−xi1wyi1−xi2wyi2…−xiDwyiD+Δ)+⋮max(0,xi1wC1\\&amp;+xi2wC2…+xiDwCD−xi1wyi1−xi2wyi2…−xiDwyiD+Δ)<br>\end{aligned}<br>$$</p>
+<p>如果</p>
+<p>$$w^T_1xi−w^T_{yi}xi+Δ&gt;0$$</p>
+<p>那么有<br>$$\frac{dL_i}{dw_{11}}=x_{i1}$$</p>
+<p>借助指示函数，可以表示为<br>$$\frac{dL_i}{dw_{11}}=1(w^T_1xi−w^T_{yi}xi+Δ&gt;0)x_{i1}$$</p>
+<p>类似可得：<br>$$<br>\frac{dL_i}{dw_{12}} = \mathbb{1}(w_1^Tx_i - w_{y_i}^Tx_i + \Delta &gt; 0) x_{i2} \\\frac{dL_i}{dw_{13}} = \mathbb{1}(w_1^Tx_i - w_{y_i}^Tx_i +       \Delta &gt; 0) x_{i3} \\\vdots \\               \frac{dL_i}{dw_{1D}} = \mathbb{1}(w_1^Tx_i - w_{y_i}^Tx_i + \Delta &gt; 0) x_{iD}<br>$$<br>即得：<br>$$\frac{dL_i}{dw_{j}} = \mathbb{1}(w_j^Tx_i - w_{y_i}^Tx_i + \Delta &gt; 0)\begin{bmatrix}<br>x_{i1} \\ x_{i2} \\ \vdots \\ x_{iD} \end{bmatrix}\\<br>= \mathbb{1}(w_j^Tx_i - w_{y_i}^Tx_i + \Delta &gt; 0) x_i^T<br>$$<br>也就是：<br>$$\frac{dL_i}{dw_{y_i}} = - \sum_{j\neq y_i} \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta &gt; 0)<br>  \begin{bmatrix}<br>  x_{i1} \\<br>  x_{i2} \\<br>  \vdots \\<br>  x_{iD}<br>  \end{bmatrix}<br>\\<br>= - \sum_{j\neq y_i} \mathbb{1}(x_iw_j - x_iw_{y_i} + \Delta &gt; 0) x_i^T$$</p>
+<p>end</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/CS231N/" rel="tag"># CS231N</a>
+          
+            <a href="/tags/Gradient/" rel="tag"># Gradient</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/23/zzuliinfo/" rel="next" title="关于学校信息门户">
+                <i class="fa fa-chevron-left"></i> 关于学校信息门户
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/30/powershell/" rel="prev" title="powershell 美化">
+                powershell 美化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/head.jfif"
+                alt="John Doe" />
+            
+              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/spwii" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是梯度"><span class="nav-number">1.</span> <span class="nav-text">什么是梯度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是梯度下降"><span class="nav-number">2.</span> <span class="nav-text">什么是梯度下降</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#full-batch-gradient-descent"><span class="nav-number">3.</span> <span class="nav-text">full-batch gradient descent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#随机梯度下降"><span class="nav-number">4.</span> <span class="nav-text">随机梯度下降</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mini-batch-Stochastic-Gradient-Decent"><span class="nav-number">5.</span> <span class="nav-text">Mini-batch Stochastic Gradient Decent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SVM-损失函数的梯度推导"><span class="nav-number">6.</span> <span class="nav-text">SVM 损失函数的梯度推导</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

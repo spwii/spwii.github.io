@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="PageRank,Google,Math," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="搜索引擎是现代互联网的基础设施之一，而网页排序则是搜索引擎的需要解决的核心问题。PageRank就是解决此问题的一个革命性的算法，Google用它来体现网页的相关性和重要性，在搜索引擎优化操作中是经常被用来评估网页优化的成效因素之一。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PageRank算法">
+<meta property="og:url" content="http://yoursite.com/2018/02/22/PageRank/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="搜索引擎是现代互联网的基础设施之一，而网页排序则是搜索引擎的需要解决的核心问题。PageRank就是解决此问题的一个革命性的算法，Google用它来体现网页的相关性和重要性，在搜索引擎优化操作中是经常被用来评估网页优化的成效因素之一。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://image-1252432001.coscd.myqcloud.com/PageRank/pagerank1.jpg">
+<meta property="og:image" content="http://image-1252432001.coscd.myqcloud.com/PageRank/pagerank2.jpg">
+<meta property="og:image" content="http://image-1252432001.coscd.myqcloud.com/PageRank/pagerank3.jpg">
+<meta property="article:published_time" content="2018-02-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-07-31T23:59:52.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="PageRank">
+<meta property="article:tag" content="Google">
+<meta property="article:tag" content="Math">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://image-1252432001.coscd.myqcloud.com/PageRank/pagerank1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/22/PageRank/"/>
+
+
+
+
+
+  <title>PageRank算法 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/22/PageRank/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jfif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PageRank算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-22T00:00:00+08:00">
+                2018-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index">
+                    <span itemprop="name">课程设计</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>搜索引擎是现代互联网的基础设施之一，而网页排序则是搜索引擎的需要解决的核心问题。PageRank就是解决此问题的一个革命性的算法，Google用它来体现网页的相关性和重要性，在搜索引擎优化操作中是经常被用来评估网页优化的成效因素之一。</p>
+<a id="more"></a>
+
+<p>本文主要在简单介绍PageRank的算法模型，以及算法的缺陷和改进方法，来提高用户的搜索结果的满意度。</p>
+<p>关键词：PageRank；搜索引擎；Google；排序算法。</p>
+<h4 id="PageRank-算法简介"><a href="#PageRank-算法简介" class="headerlink" title="PageRank 算法简介"></a>PageRank 算法简介</h4><p>最早的搜索引擎采用的是分类目录的方法，通过人工进行网页分类并整理出高质量的网站。那时 Yahoo 和国内的 hao123 就是使用的这种方法。后来网页越来越多，人工分类已经不现实了。搜索引擎进入了文本检索的时代，计算用户查询关键词与网页内容的相关程度来返回搜索结果。但是有些标题党的网页就会莫名的排名很靠前，影响搜索效果。</p>
+<p>谷歌的两位创始人，当时还是美国斯坦福大学研究生的拉里·佩奇和谢尔盖·布林开始了对网页排序问题的研究，后来他们两个发明了PageRank算法，以拉里·佩奇（LarryPage）的名字来命名它，按照《数学之美》（吴军）中的说法，PageRank 的算法思想主要来自于拉里.佩奇，而谢尔盖·布林则将其转化为矩阵的迭代运算并证明其收敛性。</p>
+<p>PageRank 算法的内容很简单，将整个互联网，看成一张有向图，网页是图上的点，链接是图上的有向边，每个网页都有一个得分，称作 PageRank，可以把它当成是一种投票权，将每一个超链接作为一次投票，每个网页的PageRank 等于所有具有指向该网页超链接的网页的 PageRank 的加权和这些权值等于这些网页各自向外链接数目的倒数。谷歌用它来体现网页的相关性和重要性，在搜索引擎优化操作中是经常被用来评估网页优化的成效因素之一。</p>
+<h4 id="PageRank算法原理"><a href="#PageRank算法原理" class="headerlink" title="PageRank算法原理"></a>PageRank算法原理</h4><h5 id="PageRank模型"><a href="#PageRank模型" class="headerlink" title="PageRank模型"></a>PageRank模型</h5><p>互联网中众多的网页可以看成一张有向图，其中网页是一个节点，如果A网页中存在链接可以链接到B网页，则存在一条有向边A-&gt;B.</p>
+<p><img src="http://image-1252432001.coscd.myqcloud.com/PageRank/pagerank1.jpg" alt="pagerank1"></p>
+<p>在上图中，如果正在浏览A网页，那么上网的人会各以1/3的概率跳到B，C，D网页，这里A有3个可以跳转的网页，同理可得，在D网页浏览的用户，到B，C网页的概率各位1/2，但是B到C的概率为0。在这里我们可以用概率转移矩阵表示用户跳转的概率，则可以得到上图的概率转移矩阵。<br>$$<br>M = \begin{bmatrix} 0 &amp;1/2 &amp; 0 &amp; 1/2\\ 1/3 &amp; 0 &amp; 0 &amp; 1/2\\ 1/3 &amp; 1/2 &amp; 0 &amp; 0\\ 1/3&amp;0&amp;1&amp;0 \end{bmatrix}<br>$$<br>在开始时，假设用户在每一个网页的概率都是相等的，概率为$\frac{1}{n}$,于是在开始时的概率分布就是一个所有值为$\frac{1}{n}$的n维列向量 ,用$V_0$右乘上矩阵M，其结果就是一步转移概率矩阵为 $V_1$<br>$$<br>V_1=MV_0= \begin{bmatrix} 0&amp;1/2&amp;0&amp;1/2\\ 1/3&amp;0&amp;0&amp;1/2\\ 1/3&amp;1/2&amp;0&amp;0\\  1/3&amp;0&amp;1&amp;0 \end{bmatrix}  \begin{bmatrix} 1/4\\ 1/4\\ 1/4\\ 1/4 \end{bmatrix} =  \begin{bmatrix} 1/4\\ 5/24\\\ 5/24\\ 1/3 \end{bmatrix}<br>$$<br>这里的矩阵M中$M[i][j]$ 不为0表示一个链接从j指向i，在得到$V_1$后,再用$V_1$去右乘M，可以得到$V_2$,继续下去，最终V会收敛（假设图是强连通的），$V_n = MV_{n-1}$.</p>
+<p>Matlab：</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">format long;</span><br><span class="line">M = [<span class="number">0</span>,<span class="number">1</span>/<span class="number">2</span>,<span class="number">0</span>,<span class="number">1</span>/<span class="number">2</span>;<span class="number">1</span>/<span class="number">3</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>/<span class="number">2</span>;<span class="number">1</span>/<span class="number">3</span>,<span class="number">1</span>/<span class="number">2</span>,<span class="number">0</span>,<span class="number">0</span>;<span class="number">1</span>/<span class="number">3</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>];</span><br><span class="line">V = [<span class="number">1</span>/<span class="number">4</span>;<span class="number">1</span>/<span class="number">4</span>;<span class="number">1</span>/<span class="number">4</span>;<span class="number">1</span>/<span class="number">4</span>];</span><br><span class="line"><span class="comment">% 开始迭代</span></span><br><span class="line">times = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">while</span> <span class="built_in">true</span></span><br><span class="line">    check = V;</span><br><span class="line">    V = M*V;</span><br><span class="line"><span class="built_in">disp</span>(V);</span><br><span class="line">ifabs(check - V) &lt; <span class="number">1e-15</span></span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">    times = times + <span class="number">1</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="built_in">disp</span>(times);</span><br></pre></td></tr></table></figure>
+
+<p>最终收敛于<br>$$<br>V_{76}= \begin{bmatrix} 0.264705882352941 \\ 0.235294117647058 \\ 0.205882352941176 \\ 0.294117647058823 \end{bmatrix} ≈ \begin{bmatrix} 1/4 \\ 1/4 \\ 1/5 \\ 1/4 \end{bmatrix}<br>$$<br>76步转移概率矩阵，也就是A网页相比于其他的网页更重要些，搜索引擎在对四个网页进行排序是C应该放在最上面。</p>
+<h4 id="模型中的问题"><a href="#模型中的问题" class="headerlink" title="模型中的问题"></a>模型中的问题</h4><h5 id="终止点问题（Dead-Ends）"><a href="#终止点问题（Dead-Ends）" class="headerlink" title="终止点问题（Dead Ends）"></a>终止点问题（Dead Ends）</h5><p>在上面的简单模型中有一个很重要的假设，就是上面的网页是不会终止的，也就是说，从任何一个网页就可以到达任意一个网页，即图是强连通的。只有这样最终会收敛。</p>
+<p>但是在真是的互联网中的网页不满足强联通性，有的网页并不指向任何网页，当用户到达这样的网页，其概率会被清零，对上面的例子可以做下验证，将网页变成不指向任何网页的网页。</p>
+<p> <img src="http://image-1252432001.coscd.myqcloud.com/PageRank/pagerank2.jpg" alt="pagerank2"></p>
+<p>对应得转移矩阵为<br>$$<br>M= \begin{bmatrix} 0&amp;1/2&amp;0&amp;0 \\ 1/3&amp;0&amp;0&amp;0 \\ 1/3&amp;1/2&amp;0&amp;0 \\ 1/3&amp;0&amp;1&amp;0 \end{bmatrix}<br>$$<br>仍然按上述的方法来迭代可以得到<br>$$<br>V_{831} =  \begin{bmatrix} 0 \\ 0 \\ 0 \\ 0 \end{bmatrix}<br>$$<br>在迭代831次后概率收敛于0.</p>
+<h5 id="循环问题-Spider-Trap"><a href="#循环问题-Spider-Trap" class="headerlink" title="循环问题(Spider Trap)"></a>循环问题(Spider Trap)</h5><p>循环问题，就是这网页没有指向任何其他的网页的链接，但是它存在指向自己的链接。如图</p>
+<p><img src="http://image-1252432001.coscd.myqcloud.com/PageRank/pagerank3.jpg" alt="pagerank3"></p>
+<p>但用户到达D网页时，因为D指向自己，这是会陷入循环，最终全部的概率会全部分散到D网页上。</p>
+<p>上图的转移概率矩阵为<br>$$<br>M = \begin{bmatrix} 0&amp;1/2&amp;0&amp;0 \\ 1/3&amp;0&amp;0&amp;0 \\ 1/3&amp;1/2&amp;0&amp;0 \\ 1/3&amp;0&amp;1&amp;1 \end{bmatrix}<br>$$<br>继续上述的迭代可得<br>$$<br>V_{40}=  \begin{bmatrix} 0 \\ 0 \\ 0 \\ 1 \end{bmatrix}<br>$$<br>迭代40次后收敛于0.</p>
+<h4 id="模型问题解决"><a href="#模型问题解决" class="headerlink" title="模型问题解决"></a>模型问题解决</h4><p>对于上面的问题，其实有很大的一个Bug，用户是聪明的，悠闲的，正常的，并不愚蠢。用户选择网页时随机的，当它遇到一个网页不认指向任何网页或者指向自己，用户有可能在地址栏中输入一个新的地址，从而浏览新的网页。</p>
+<p>对算法的改进，用户可能都不想看当前网页了，不看当前网页也就不会点击</p>
+<p>上面的链接，而是在地址栏输入另外一个地址，而在地址栏输入而跳转到各个网页的概率为1/n,假设用户查看当前网页的概率为$\alpha$，那么它从地址栏跳转的概率为$(1- \alpha)$,于是可以得到新的迭代函数<br>$$<br>V_n= \frac{α}{N}∙I+(1-α)M∙V_(n-1)<br>$$<br>利用迭代函数迭代计算带有循环问题的图的概率分布：<br>$$<br>V_1= \frac{α}{N}∙I+(1-α)M∙V_0= \begin{bmatrix} 0&amp;1/2&amp;0&amp;0 \\ 1/3&amp;0&amp;0&amp;0 \\ 1/3&amp;1/2&amp;0&amp;0 \\ 1/3&amp;0&amp;1&amp;1 \end{bmatrix} ×0.85+0.15× \begin{bmatrix} 1/4 \\ 1/4 \\ 1/4 \\ 1/4 \end{bmatrix}× \begin{bmatrix} 1/4 \\ 1/4 \\ 1/4 \\ 1/4 \end{bmatrix}<br>$$<br>这里令$\alpha = 0.15$ ,I是单位矩阵，这里的N=1/4，意思为网页的个数，迭代可以得到<br>$$<br>V_{32}=  \begin{bmatrix} 0.060753197536713 \\ 0.054713405968735 \\ 0.077966603505448 \\ 0.806566792989104 \end{bmatrix}<br>$$<br>最终迭代32次后,数值变化不大，收敛于$V_{32}$。</p>
+<p>PageRank计算的是某个人在任意次链接点击后到达某一网页的可能性。如果某个网页拥有来自其他热门网页的外部链接越多，人们无意间到达该网页的可能性就会越大。当然，如果用户始终不停地点击，那么他们最终将到达每一个网页，但大多数人在浏览一段时间之后都会停止了点击。为了反映这一情况，PageRank还使用了一个值为0.85的阻尼因子，也就是上面模型中的参数 ,用以指示用户持续点击每个网页中链接的概率为85%。</p>
+<h4 id="算法的缺点和改进"><a href="#算法的缺点和改进" class="headerlink" title="算法的缺点和改进"></a>算法的缺点和改进</h4><p>PageRank算法就是求Markov链的转移概率矩阵，再求其平稳分布，算法简单，但是效果是革命性的。</p>
+<h5 id="PageRank缺陷"><a href="#PageRank缺陷" class="headerlink" title="PageRank缺陷"></a>PageRank缺陷</h5><p>PageRank算法也有很多的缺点，在真正的互联网中海量数据的计算是很困难的，网页排名的更新周期也会更长，从而也会影响搜索效果。</p>
+<p>在对一些推广的网页，没有过滤广告链接和功能链接（例如“分享到微博”等），这些链接通常没有什么实际价值，前者链接到广告页面，后者常常链接到某个社交网站首页。</p>
+<p>对新网页不友好。一个新网页的一般进入该网页的链接（外链）相对较少，即使它的内容的质量很高，要成为一个高PageRank值的页面仍需要很长时间的推广，也影响搜索的效果。</p>
+<h5 id="PageRank算法与作弊"><a href="#PageRank算法与作弊" class="headerlink" title="PageRank算法与作弊"></a>PageRank算法与作弊</h5><p>如果我想让我的网站在搜索是排名靠前，不过如果我明白了PageRank主要靠内链数计算页面权重，一个页面会将权重均匀散播给被链接网站，所以除了内链数外，上游页面的权重也很重要，我要做的第一件事情就是尽量找一些PageRank较高的网页去加上对我网站首页的链接。例如我可以去微博，知乎等地方回个这样的贴：“楼主的帖子很不错！精彩内容：<a href="http://XXXXXXXX" target="_blank" rel="noopener">http://XXXXXXXX</a>”，那么这些就在提高自己网站的PageRank值，也就是在作弊。</p>
+<h4 id="PageRank-改进"><a href="#PageRank-改进" class="headerlink" title="PageRank 改进"></a>PageRank 改进</h4><p>TrustRank，针对PageRank算法的缺点，有人提出了TrustRank算法，TrustRank算法的工作原理：先人工去识别高质量的页面，那么由这些高质量页面指向的页面也可能是高质量页面，即其TrustRank值也高，与这些页面的链接越远，页面的TrustRank值越低。这些页面可选出超链接数较多的网页，也可选PageRank值较高的网站。</p>
+<p>TrustRank算法给出每个网页的TR值。将PageRank值与TrustRank值结合起来，可以更准确地判断网页的重要性。</p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p>[1] 吴军. 数学之美[M]. 北京:人民邮电出版社, 2014.</p>
+<p>[2]（美）西格兰（Segaran,T,).集体编程智慧[M].北京:电子工业出版社,2015. </p>
+<p>[3]张波, 张景肖. 应用随机过程[M]. 北京:清华大学出版社, 2004.</p>
+<p>[4]wikipedia. PageRank[EB/OL].<a href="https://en.wikipedia.org/wiki/PageRank" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/PageRank</a>.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PageRank/" rel="tag"># PageRank</a>
+          
+            <a href="/tags/Google/" rel="tag"># Google</a>
+          
+            <a href="/tags/Math/" rel="tag"># Math</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/21/knn/" rel="next" title="KNN算法">
+                <i class="fa fa-chevron-left"></i> KNN算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/22/NonlinearEquations/" rel="prev" title="非线性方程求根算法设计">
+                非线性方程求根算法设计 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/head.jfif"
+                alt="John Doe" />
+            
+              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/spwii" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#PageRank-算法简介"><span class="nav-number">1.</span> <span class="nav-text">PageRank 算法简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PageRank算法原理"><span class="nav-number">2.</span> <span class="nav-text">PageRank算法原理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#PageRank模型"><span class="nav-number">2.1.</span> <span class="nav-text">PageRank模型</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模型中的问题"><span class="nav-number">3.</span> <span class="nav-text">模型中的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#终止点问题（Dead-Ends）"><span class="nav-number">3.1.</span> <span class="nav-text">终止点问题（Dead Ends）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#循环问题-Spider-Trap"><span class="nav-number">3.2.</span> <span class="nav-text">循环问题(Spider Trap)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#模型问题解决"><span class="nav-number">4.</span> <span class="nav-text">模型问题解决</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#算法的缺点和改进"><span class="nav-number">5.</span> <span class="nav-text">算法的缺点和改进</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#PageRank缺陷"><span class="nav-number">5.1.</span> <span class="nav-text">PageRank缺陷</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#PageRank算法与作弊"><span class="nav-number">5.2.</span> <span class="nav-text">PageRank算法与作弊</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PageRank-改进"><span class="nav-number">6.</span> <span class="nav-text">PageRank 改进</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文献"><span class="nav-number">7.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

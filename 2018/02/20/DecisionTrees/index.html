@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,MachineLearn,DecisionTrees," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="决策树是一种基本的分类与回归的方法。分类决策树模型是一种描述对实例进行分类的树形结构。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="决策树">
+<meta property="og:url" content="http://yoursite.com/2018/02/20/DecisionTrees/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="决策树是一种基本的分类与回归的方法。分类决策树模型是一种描述对实例进行分类的树形结构。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://image-1252432001.coscd.myqcloud.com/decisiontree.png">
+<meta property="article:published_time" content="2018-02-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2019-07-31T10:36:10.000Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="MachineLearn">
+<meta property="article:tag" content="DecisionTrees">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://image-1252432001.coscd.myqcloud.com/decisiontree.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"hide","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/20/DecisionTrees/"/>
+
+
+
+
+
+  <title>决策树 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/%20" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/02/20/DecisionTrees/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/head.jfif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">决策树</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-20T00:00:00+08:00">
+                2018-02-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>决策树是一种基本的分类与回归的方法。分类决策树模型是一种描述对实例进行分类的树形结构。</p>
+<a id="more"></a>
+
+<h3 id="信息增益"><a href="#信息增益" class="headerlink" title="信息增益"></a>信息增益</h3><p><img src="http://image-1252432001.coscd.myqcloud.com/decisiontree.png" alt="decisiontree"></p>
+<p>上图中的决策什么时候终止，就涉及到一个最小的样本分割数量，何时停止划分数据集，如何划分数据集，这里就引入了信息增益。</p>
+<p>划分数据集的大原则是：将无序的数据变得更加有序。在划分数据集之前之后信息发生的变化称为信息增益，计算每个特征值划分数据集获得的信息增益，其中信息增益最高的特征就是最好的选择。</p>
+<h4 id="信息增益的计算"><a href="#信息增益的计算" class="headerlink" title="信息增益的计算"></a>信息增益的计算</h4><p>信息增益的计算，集合信息的度量方式称为香农熵或熵。</p>
+<p>熵为信息的期望值，熵度量了事物的不确定性，越是不确定的事物，它的熵就越大。具体的，随机变量X的熵：<br>$$<br>H(X) = -\sum_{i=1}^n p_{i} log_{2}(p_{i})<br>$$<br>其中n代表X的n种不同的离散取值，而$p_{i}$ 代表了X取值为$i$ 的概率。</p>
+<p>H(X) 度量了X的不确定性，H(X)的值越小，则X的纯度越高。</p>
+<p>假设离散属性a有V个可能的取值${a^1, a^2,…..,a^v}$ ,若使用a来对样本集X进行划分，则会产生V个分支节点，其中第V个分支节点包含了X中所有在属性a上取值为$a^v$ 的样本，记为$X^v$ .可以计算出$X^v$ 的信息熵，由于不同的分支节点所包含的样本数不同，给分支节点赋予权重$\frac{|X^v|}{|X|}$ ,即样本数越多的分支节点的影响越大，于是可计算出属性a对样本X进行划分所获得”信息增益”。<br>$$<br>Gain(X, a) = H(X)  - \sum_{v=1}^V \frac{|X^v|}{|X|} H(X^v)<br>$$</p>
+<h4 id="信息增益计算举例"><a href="#信息增益计算举例" class="headerlink" title="信息增益计算举例"></a>信息增益计算举例</h4><table>
+<thead>
+<tr>
+<th>编号</th>
+<th>色泽</th>
+<th>根蒂</th>
+<th>敲声</th>
+<th>纹理</th>
+<th>脐部</th>
+<th>触感</th>
+<th>好瓜</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>青绿</td>
+<td>蜷缩</td>
+<td>浊响</td>
+<td>清晰</td>
+<td>凹陷</td>
+<td>硬滑</td>
+<td>是</td>
+</tr>
+<tr>
+<td>2</td>
+<td>乌黑</td>
+<td>蜷缩</td>
+<td>沉闷</td>
+<td>清晰</td>
+<td>凹陷</td>
+<td>硬滑</td>
+<td>是</td>
+</tr>
+<tr>
+<td>3</td>
+<td>乌黑</td>
+<td>蜷缩</td>
+<td>浊响</td>
+<td>清晰</td>
+<td>凹陷</td>
+<td>硬滑</td>
+<td>是</td>
+</tr>
+<tr>
+<td>4</td>
+<td>青绿</td>
+<td>蜷缩</td>
+<td>沉闷</td>
+<td>清晰</td>
+<td>凹陷</td>
+<td>硬滑</td>
+<td>是</td>
+</tr>
+<tr>
+<td>5</td>
+<td>浅白</td>
+<td>蜷缩</td>
+<td>浊响</td>
+<td>清晰</td>
+<td>凹陷</td>
+<td>硬滑</td>
+<td>是</td>
+</tr>
+<tr>
+<td>6</td>
+<td>青绿</td>
+<td>稍蜷</td>
+<td>浊响</td>
+<td>清晰</td>
+<td>稍凹</td>
+<td>软粘</td>
+<td>是</td>
+</tr>
+<tr>
+<td>7</td>
+<td>乌黑</td>
+<td>稍蜷</td>
+<td>浊响</td>
+<td>稍糊</td>
+<td>稍凹</td>
+<td>软粘</td>
+<td>是</td>
+</tr>
+<tr>
+<td>8</td>
+<td>乌黑</td>
+<td>稍蜷</td>
+<td>浊响</td>
+<td>清晰</td>
+<td>稍凹</td>
+<td>硬滑</td>
+<td>是</td>
+</tr>
+<tr>
+<td>9</td>
+<td>乌黑</td>
+<td>稍蜷</td>
+<td>沉闷</td>
+<td>稍糊</td>
+<td>稍凹</td>
+<td>硬滑</td>
+<td>否</td>
+</tr>
+<tr>
+<td>10</td>
+<td>青绿</td>
+<td>硬挺</td>
+<td>清脆</td>
+<td>清晰</td>
+<td>平坦</td>
+<td>软粘</td>
+<td>否</td>
+</tr>
+<tr>
+<td>11</td>
+<td>浅白</td>
+<td>硬挺</td>
+<td>清脆</td>
+<td>模糊</td>
+<td>平坦</td>
+<td>硬滑</td>
+<td>否</td>
+</tr>
+<tr>
+<td>12</td>
+<td>浅白</td>
+<td>蜷缩</td>
+<td>浊响</td>
+<td>模糊</td>
+<td>平坦</td>
+<td>软粘</td>
+<td>否</td>
+</tr>
+<tr>
+<td>13</td>
+<td>青绿</td>
+<td>稍蜷</td>
+<td>浊响</td>
+<td>稍糊</td>
+<td>凹陷</td>
+<td>硬滑</td>
+<td>否</td>
+</tr>
+<tr>
+<td>14</td>
+<td>浅白</td>
+<td>稍蜷</td>
+<td>沉闷</td>
+<td>稍糊</td>
+<td>凹陷</td>
+<td>硬滑</td>
+<td>否</td>
+</tr>
+<tr>
+<td>15</td>
+<td>乌黑</td>
+<td>稍蜷</td>
+<td>浊响</td>
+<td>清晰</td>
+<td>稍凹</td>
+<td>软粘</td>
+<td>否</td>
+</tr>
+<tr>
+<td>16</td>
+<td>浅白</td>
+<td>蜷缩</td>
+<td>浊响</td>
+<td>模糊</td>
+<td>平坦</td>
+<td>硬滑</td>
+<td>否</td>
+</tr>
+<tr>
+<td>17</td>
+<td>青绿</td>
+<td>蜷缩</td>
+<td>沉闷</td>
+<td>稍糊</td>
+<td>稍凹</td>
+<td>硬滑</td>
+<td>否</td>
+</tr>
+</tbody></table>
+<p>根据西瓜书上的例子可以熟悉和了解计算。</p>
+<p>根据数据集易知n=2,根节点包含X中的所有样例，其中正例(即是好瓜)占$p_1 = \frac{8}{17}$ ,反例占$p_2 = \frac{9}{17}$ ,于是，可以计算出根节点的信息熵：</p>
+<p>$$<br>H(X) = -\sum_{i=1}^2 p_i log_{2}(p_i) = -( \frac{8}{17}log_{2}(\frac{8}{17}) + \frac{9}{17} log_{2}(\frac{9}{17})) = 0.998<br>$$<br>从数据集中可以计算得到属性的集合{色泽，根蒂，敲声，纹理，脐部，触感}中每个属性的信息增益。以”纹理” 为例，它有3个可能的取值：{清晰，模糊，稍糊}，利用该属性对X进行划分，可得3个子集，分别记为：$X^1​$ (纹理=清晰)， $X^2​$ (纹理=稍糊)，$X^3​$ (纹理=模糊)。</p>
+<p>$X^1$ 包含9个样例，其中正例占$p_1=\frac{7}{9}$ ,反例占$p_2=\frac{2}{9}$ ,$X^2$ 包含5个样例，其中正例占$p_1=\frac{1}{5}$ ,反例占$p_2=\frac{4}{5}$,$X^3$ 包含3个样例，其中正例占$p_1=\frac{0}{3}$ ,反例占$p_2=\frac{3}{3}$.</p>
+<p>然后可以计算出3个分支节点的信息熵:</p>
+<p>$$<br>H(X^1) = -(\frac{7}{9}log_{2}(\frac{7}{9}) + \frac{2}{9}log_{2}(\frac{2}{9})) = 0.764<br>$$</p>
+<p>$$<br>H(X^2) = -(\frac{1}{5}log_{2}(\frac{1}{5}) + \frac{4}{5}log_{2}(\frac{4}{5})) = 0.721<br>$$</p>
+<p>$$<br>H(X^3) = -(\frac{0}{3}log_{2}(\frac{0}{3}) + \frac{3}{3}log_{2}(\frac{3}{3})) = 0<br>$$</p>
+<p>根据上面的推到可以得到属性”纹理“的信息增益为：<br>$$<br>Gain(X, 纹理) = H(X) - \sum_{i=1}^3 \frac{|X^i|}{|X|} H(X^i)<br>$$</p>
+<p>$$<br>= 0.998 - (\frac{9}{17} \times 0.764 + \frac{5}{17} \times 0.721 + \frac{3}{17} \times 0) = 0.381<br>$$</p>
+<p>类似的可以计算其他属性的信息增益：</p>
+<p>$Gain(X, 根蒂) = 0.143$; $Gain(X, 敲声) = 0.141$；</p>
+<p>$Gain(X, 纹理) = 0.381$; $Gain(X, 脐部) = 0.289$；</p>
+<p>$Gain(X, 触感) = 0.006$；</p>
+<p>显然，属性”纹理”的信息增益最大，于是它被选为划分属性的效果最好。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">                                    +---------+</span><br><span class="line">                                    |  纹 理  |</span><br><span class="line">                                    |         |</span><br><span class="line">                                    +---+-----+</span><br><span class="line">                                        |</span><br><span class="line">                                        |</span><br><span class="line">                   +--------------------+-------------------------+</span><br><span class="line">                   | 清 晰            稍 糊                   模 糊|</span><br><span class="line">                   |                    +                         |</span><br><span class="line">                   |                    |                         |</span><br><span class="line">                   |                    |                         |</span><br><span class="line">                   |                    |                         |</span><br><span class="line">+------------------+---+     +----------+----+    +---------------+</span><br><span class="line">|&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">8</span>,<span class="number">10</span>,<span class="number">15</span>&#125; |     |&#123;<span class="number">7</span>,<span class="number">9</span>,<span class="number">13</span>,<span class="number">14</span>,<span class="number">17</span>&#125; |    |&#123;<span class="number">11</span>,<span class="number">12</span>,<span class="number">16</span>&#125;     |</span><br><span class="line">+----------------------+     +---------------+    +---------------+</span><br></pre></td></tr></table></figure>
+
+<p>然后,利用决策树算法对每个节点作进一步划分，以上图中的(“纹理=清晰”)为例，该节点包含的样例集合$X^1$ 中有9个样例，可用属性集合为{色泽，根蒂，敲声，触感}，基于$X^1$ 计算出各个属性的信息增益:<br>$$<br>Gain(X^1, 色泽) = 0.043; Gain(X^1, 根蒂) = 0.458;<br>$$</p>
+<p>$$<br>Gain(X^1, 敲声) = 0.331； Gain(X^1, 脐部) = 0.458；<br>$$</p>
+<p>$$<br>Gain(X^1, 触感) = 0.458；<br>$$</p>
+<p>其中”根蒂”， “脐部”， “触感”, 3个属性均取得最大的信息增益，选其中一个来划分属性，同理，对每个节点进行上述操作，最终得到决策树如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">                                                   +-------------+</span><br><span class="line">                                                   |  纹 理 = ?  |</span><br><span class="line">                                                   +-----+-------+</span><br><span class="line">                                                         |</span><br><span class="line">                              +--------------------------+---------------------------------+</span><br><span class="line">                              +                          稍 糊                               模 糊</span><br><span class="line">                              清 晰                       +                                 +</span><br><span class="line">                              |                          |                                 |</span><br><span class="line">                     +--------+--------+         +-------+--------+                 +------+-----+</span><br><span class="line">                     |  根 蒂 = ？      |         |   触 感 = ？   |                 |   坏 瓜     |</span><br><span class="line">                     +--------+--------+         +-------+--------+                 +------------+</span><br><span class="line">                              |                          |</span><br><span class="line">                              |                          |</span><br><span class="line">                              |                 +--------+-----------+</span><br><span class="line">                              |                 硬 滑                 软 粘</span><br><span class="line">                              |                 |                    |</span><br><span class="line">                              |                 |                    |</span><br><span class="line">                              |           +-----+---+          +-----+----+</span><br><span class="line">                              |           | 好 瓜    |          | 坏 瓜    |</span><br><span class="line">                              |           +---------+          +----------+</span><br><span class="line">                              |</span><br><span class="line">      +-----------------------+-----------------+</span><br><span class="line">      蜷 缩                     稍 缩             硬 挺</span><br><span class="line">      |                       |                 |</span><br><span class="line">+-----+-----+          +------+-----+       +---+------+</span><br><span class="line">|  好 瓜    |          | 色 泽 = ？  |       | 坏 瓜     |</span><br><span class="line">+-----------+          +------+-----+       +----------+</span><br><span class="line">                              |</span><br><span class="line">                              |</span><br><span class="line">          +-------------------+---------------+</span><br><span class="line">          青 绿                 乌 黑             浅 白</span><br><span class="line">          |                   |               |</span><br><span class="line">    +-----+---+           +---+----+      +---+------+</span><br><span class="line">    | 好 瓜    |          | 触 感 = ？|    | 好 瓜     |</span><br><span class="line">    +---------+           +---+----+      +----------+</span><br><span class="line">                              |</span><br><span class="line">             +----------------+-----------------+</span><br><span class="line">             硬 滑                                软 粘</span><br><span class="line">             |                                  |</span><br><span class="line">      +------+------+                 +---------+-----+</span><br><span class="line">      |  好 瓜       |                 |  坏 瓜        |</span><br><span class="line">      +-------------+                 +---------------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="DecisionTrees-优缺点"><a href="#DecisionTrees-优缺点" class="headerlink" title="DecisionTrees 优缺点"></a>DecisionTrees 优缺点</h3><p>决策树算法易于使用，结果更好的理解。但是决策树容易过度拟合，尤其使用包含大量特征的数据集时，适当的时间停止决策树的生长是很重要的。</p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>以如下数据集为例</p>
+<table>
+<thead>
+<tr>
+<th>1</th>
+<th>1</th>
+<th>yes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>no</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>no</td>
+</tr>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>no</td>
+</tr>
+</tbody></table>
+<p><strong>calcShannoEnt</strong> 为计算一个数据集的熵的函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># compute entropy 根节点的熵</span><br><span class="line">def calcShannonEnt(dataSet):</span><br><span class="line">    # 数据集的行数</span><br><span class="line">    numEntries &#x3D; len(dataSet)</span><br><span class="line">    # 标签计数</span><br><span class="line">    labelCounts &#x3D; &#123;&#125;</span><br><span class="line">    # 迭代每一行</span><br><span class="line">    for featVec in dataSet:</span><br><span class="line">        # 得到标签</span><br><span class="line">        currentLabel &#x3D; featVec[-1]</span><br><span class="line">        # 判断标签是否存在</span><br><span class="line">        labelCounts[currentLabel] &#x3D; labelCounts.get(currentLabel, 0) + 1</span><br><span class="line">        # if currentLabel not in labelCounts.keys():</span><br><span class="line">        #     labelCounts[currentLabel] &#x3D; 0</span><br><span class="line">        # labelCounts[currentLabel] +&#x3D; 1</span><br><span class="line">    shannonEnt &#x3D; 0.0</span><br><span class="line">    print(labelCounts)</span><br><span class="line">    # 计算熵</span><br><span class="line">    for key in labelCounts:</span><br><span class="line">        prob &#x3D; float(labelCounts[key]) &#x2F; numEntries</span><br><span class="line">        shannonEnt -&#x3D; prob * math.log(prob, 2)</span><br><span class="line">    return shannonEnt</span><br></pre></td></tr></table></figure>
+<h4 id="划分数据集"><a href="#划分数据集" class="headerlink" title="划分数据集"></a>划分数据集</h4><p>当得到熵时，可以按照最大的熵来划分数据集。在splitDataSet函数中axis为要匹配的那一行数据，返回的是值为value的除去axis这行以外的其他数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># splite dataset</span><br><span class="line">def splitDataSet(dataSet, axis, value):</span><br><span class="line">    &#39;&#39;&#39;</span><br><span class="line">    dataSet 数据集</span><br><span class="line">    axis 那一行的数据</span><br><span class="line">    value 要提取的值</span><br><span class="line">    &#39;&#39;&#39;</span><br><span class="line">    retDataSet &#x3D; []</span><br><span class="line">    # 迭代数据集</span><br><span class="line">    for featVec in dataSet:</span><br><span class="line">        if featVec[axis] &#x3D;&#x3D; value:</span><br><span class="line">            # 将这一行的数据复制</span><br><span class="line">            reducedFeatVec &#x3D; featVec[:axis]</span><br><span class="line">            print(reducedFeatVec)</span><br><span class="line">            # 添加标签 </span><br><span class="line">            print(featVec[axis+1:])</span><br><span class="line">            reducedFeatVec.extend(featVec[axis + 1:])</span><br><span class="line">            # 合并</span><br><span class="line">            retDataSet.append(reducedFeatVec)</span><br><span class="line">    return retDataSet</span><br></pre></td></tr></table></figure>
+<h4 id="选择最好的特征"><a href="#选择最好的特征" class="headerlink" title="选择最好的特征"></a>选择最好的特征</h4><p>chooseBestFeatureToSplit 函数去选择最好的特征来分割数据集。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">def chooseBestFeatureToSplit(dataSet):</span><br><span class="line">    # all features</span><br><span class="line">    numFeatures &#x3D; len(dataSet[0]) - 1</span><br><span class="line">    # dataset shannon entropy</span><br><span class="line">    baseEntropy &#x3D; calcShannonEnt(dataSet)</span><br><span class="line">    bestInfoGain &#x3D; 0.0</span><br><span class="line">    bestFeature &#x3D; -1</span><br><span class="line">    for i in range(numFeatures):</span><br><span class="line">        # feature list</span><br><span class="line">        featList &#x3D; [example[i] for example in dataSet]</span><br><span class="line">        # feature value</span><br><span class="line">        uniqueVals &#x3D; set(featList)</span><br><span class="line">        newEntorpy &#x3D; 0.0</span><br><span class="line">        # compute the i feature entropy</span><br><span class="line">        for value in uniqueVals:</span><br><span class="line">            # compute subdataset entropy</span><br><span class="line">            subDataSet &#x3D; splitDataSet(dataSet, i, value)</span><br><span class="line">            # the feature entropy </span><br><span class="line">            prob &#x3D; len(subDataSet) &#x2F; float(len(dataSet))</span><br><span class="line">            newEntorpy +&#x3D; prob * calcShannonEnt(subDataSet)</span><br><span class="line">        # get the i feature entropy </span><br><span class="line">        infoGain &#x3D; baseEntropy - newEntorpy</span><br><span class="line">        # search best feature</span><br><span class="line">        if (infoGain &gt; bestInfoGain):</span><br><span class="line">            bestInfoGain &#x3D; infoGain</span><br><span class="line">            bestFeature &#x3D; i</span><br><span class="line">    return bestFeature</span><br></pre></td></tr></table></figure>
+<h4 id="构建决策树"><a href="#构建决策树" class="headerlink" title="构建决策树"></a>构建决策树</h4><p>递归的构建决策树，其中递归的结束条件为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"># final code to creat a tree</span><br><span class="line">def createTree(dataSet, labels):</span><br><span class="line">    classList &#x3D; [example[-1] for example in dataSet]</span><br><span class="line">    # 当数据集中只有一种属性时 </span><br><span class="line">    if classList.count(classList[0]) &#x3D;&#x3D; len(classList):</span><br><span class="line">        return classList[0]</span><br><span class="line">    # 数据集已被划分完, 只有一个元素 </span><br><span class="line">    if len(dataSet[0]) &#x3D;&#x3D; 1:</span><br><span class="line">        return majorityCnt(classList)</span><br><span class="line">    # 得到最佳特征和标签</span><br><span class="line">    bestFeat &#x3D; chooseBestFeatureToSplit(dataSet)</span><br><span class="line">    bestFeatLabel &#x3D; labels[bestFeat]</span><br><span class="line">    # 构建树的类型</span><br><span class="line">    myTree &#x3D; &#123;bestFeatLabel: &#123;&#125;&#125;</span><br><span class="line">    # 删除已用过的标签 </span><br><span class="line">    del (labels[bestFeat])</span><br><span class="line">    # 最佳特征的值 </span><br><span class="line">    featValue &#x3D; [example[bestFeat] for example in dataSet]</span><br><span class="line">    uniqueVals &#x3D; set(featValue)</span><br><span class="line">    for value in uniqueVals:</span><br><span class="line">        # 复制这个列表</span><br><span class="line">        subLabels &#x3D; labels[:]</span><br><span class="line">        # 递归构建树 </span><br><span class="line">        myTree[bestFeatLabel][value] &#x3D; createTree(splitDataSet(dataSet, bestFeat, value), subLabels)</span><br><span class="line">    return myTre</span><br></pre></td></tr></table></figure>
+<p>majorityCnt 函数返回classList 中出现次数最多的标签</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def majorityCnt(classList):</span><br><span class="line">    classCount &#x3D; &#123;&#125;</span><br><span class="line">    for vote in classList:</span><br><span class="line">        classCount[vote] &#x3D; classCount.get(vote, 0) + 1</span><br><span class="line">        # if vote not in classCount.keys():</span><br><span class="line">        #     classCount[vote] &#x3D; 0</span><br><span class="line">        # classCount[vote] + &#x3D; 1</span><br><span class="line">    sortedClassCount &#x3D; sorted(classCount.items(), reverse&#x3D;True)</span><br><span class="line">    </span><br><span class="line">    return sortedClassCount[0][0]</span><br></pre></td></tr></table></figure>
+
+<h4 id="分类函数"><a href="#分类函数" class="headerlink" title="分类函数"></a>分类函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">def classify(inputTree, featLabels, testvec):</span><br><span class="line">    &#39;&#39;&#39;</span><br><span class="line">    inputTree 为生成的决策树</span><br><span class="line">    featLabels 为特征标签</span><br><span class="line">    testvect 为分类向量</span><br><span class="line">    &#39;&#39;&#39;</span><br><span class="line">    firstStr &#x3D; list(inputTree.keys())[0]</span><br><span class="line">    secondDict &#x3D; inputTree[firstStr]</span><br><span class="line">    featIndex &#x3D; featLabels.index(firstStr)</span><br><span class="line">    for key in secondDict.keys():</span><br><span class="line">        if testvec[featIndex] &#x3D;&#x3D; key:</span><br><span class="line">            if type(secondDict[key]).__name__ &#x3D;&#x3D; &#39;dict&#39;:</span><br><span class="line">                classLabel &#x3D; classify(secondDict[key], featLabels, testvec)</span><br><span class="line">            else:</span><br><span class="line">                classLabel &#x3D; secondDict[key]</span><br><span class="line">    </span><br><span class="line">    return classLabe</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/MachineLearn/" rel="tag"># MachineLearn</a>
+          
+            <a href="/tags/DecisionTrees/" rel="tag"># DecisionTrees</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/19/SVM1/" rel="next" title="SVM-最大间隔分类算法">
+                <i class="fa fa-chevron-left"></i> SVM-最大间隔分类算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/21/knn/" rel="prev" title="KNN算法">
+                KNN算法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/head.jfif"
+                alt="John Doe" />
+            
+              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%20%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/spwii" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#信息增益"><span class="nav-number">1.</span> <span class="nav-text">信息增益</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#信息增益的计算"><span class="nav-number">1.1.</span> <span class="nav-text">信息增益的计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#信息增益计算举例"><span class="nav-number">1.2.</span> <span class="nav-text">信息增益计算举例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DecisionTrees-优缺点"><span class="nav-number">2.</span> <span class="nav-text">DecisionTrees 优缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码实现"><span class="nav-number">3.</span> <span class="nav-text">代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#划分数据集"><span class="nav-number">3.1.</span> <span class="nav-text">划分数据集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#选择最好的特征"><span class="nav-number">3.2.</span> <span class="nav-text">选择最好的特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构建决策树"><span class="nav-number">3.3.</span> <span class="nav-text">构建决策树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分类函数"><span class="nav-number">3.4.</span> <span class="nav-text">分类函数</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
